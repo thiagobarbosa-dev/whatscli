@@ -9,6 +9,11 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [1.1.1] - 2026-04-25
+
+### Fixed
+- Automatically persist group metadata (names) to local database when running `info` or `members` commands. This ensures groups with emojis or missing names become searchable locally.
+
 ## [1.1.0] - 2026-04-25
 
 ### Added
