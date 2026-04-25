@@ -9,6 +9,12 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [0.8.2] - 2026-04-25
+
+### Fixed
+- Resolve module path aliases (`@/`) at build-time using `tsc-alias`, eliminating runtime dependency on `tsconfig.json`.
+- Remove `tsconfig-paths/register` from production entrypoint.
+
 ## [0.8.1] - 2026-04-25
 
 ### Fixed
