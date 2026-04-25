@@ -77,7 +77,7 @@ whatscli doctor
 | **Contacts** | `contacts search\|show\|refresh` | Manage contacts |
 | **Chats** | `chats list\|show` | List conversations |
 | **Groups** | `groups list\|info\|rename\|leave\|...` | Manage groups |
-| **Presence** | `presence typing\|paused` | Presence indicators |
+| **Presence** | `presence typing\|recording\|paused` | Presence indicators |
 | **Doctor** | `doctor` | Environment diagnostics |
 
 ### Global Flags
