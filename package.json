@@ -15,9 +15,6 @@
     "lint": "eslint src/ --ext .ts",
     "clean": "rm -rf dist"
   },
-  "overrides": {
-    "protobufjs": ">=7.5.5"
-  },
   "vitest": {
     "environment": "node"
   },
