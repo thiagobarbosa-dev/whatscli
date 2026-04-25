@@ -1,10 +1,10 @@
 {
   "name": "whatscli",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "WhatsApp Web CLI powered by Baileys — a wacli-compatible alternative optimized for OpenClaw",
   "main": "dist/index.js",
   "bin": {
-    "whatscli": "./dist/index.js"
+    "whatscli": "dist/index.js"
   },
   "scripts": {
     "prepare": "npm run build",
