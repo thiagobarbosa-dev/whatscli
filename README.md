@@ -32,7 +32,7 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 ## Installation
 
 ```bash
-git clone https://github.com/TeeBee/whatscli
+git clone https://github.com/thiagobarbosa-dev/whatscli
 cd whatscli
 npm install
 npm run build

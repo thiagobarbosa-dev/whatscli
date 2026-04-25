@@ -14,6 +14,8 @@ import os from 'os'
 import { closeDb } from '@/store/db'
 import { authCommand } from '@/commands/auth'
 import { doctorCommand } from '@/commands/doctor'
+import { syncCommand } from '@/commands/sync'
+import { messagesCommand } from '@/commands/messages'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require('../package.json') as { version: string; description: string }
@@ -38,6 +40,8 @@ const program = new Command()
 // ── Register commands ─────────────────────────────────────────────────────────
 program.addCommand(authCommand)
 program.addCommand(doctorCommand)
+program.addCommand(syncCommand)
+program.addCommand(messagesCommand)
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 process.on('exit', () => closeDb())

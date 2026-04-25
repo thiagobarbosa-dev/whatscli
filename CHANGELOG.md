@@ -19,8 +19,7 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
-<!--
-## [0.2.0] - YYYY-MM-DD
+## [0.2.0] - 2026-04-22
 
 ### Added
 - `whatscli auth` — QR login with persistent multi-file auth_state
@@ -32,11 +31,10 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 - Global flags: --store, --json, --full, --read-only, --timeout
 
 ### Changed
-- n/a
+- Converted SQLite storage to `node-sqlite3-wasm` for pure JS/WASM Node 25 compatibility without compilation issues
 
 ### Fixed
 - n/a
--->
 
 <!--
 ## [0.3.0] - YYYY-MM-DD

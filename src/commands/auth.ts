@@ -35,11 +35,11 @@ authCommand.action(async (opts: { follow?: boolean }, cmd: Command) => {
           outputSuccess('Authenticated successfully!', globalOpts)
 
           if (!opts.follow) {
-            // Give saveCreds a tick to flush before exiting
-            setImmediate(() => {
+            // Give saveCreds ample time to flush before exiting (pairing needs a few seconds to stabilize)
+            setTimeout(() => {
               baileysService.disconnect()
               process.exit(0)
-            })
+            }, 5000)
           }
         }
       },
