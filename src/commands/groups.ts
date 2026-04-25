@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { groupService } from '@/services/group.service'
-import { chatStore } from '@/store/chat.store'
-import { normalizeJid, defaultStoreDir } from '@/utils/jid.utils'
+import { groupService } from '../services/group.service.js'
+import { chatStore } from '../store/chat.store.js'
+import { normalizeJid, defaultStoreDir } from '../utils/jid.utils.js'
 import { ParticipantAction } from '@whiskeysockets/baileys'
 
 export const groupsCommand = new Command('groups')

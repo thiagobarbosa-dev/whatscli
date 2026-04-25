@@ -19,21 +19,22 @@ process.stderr.on('error', (err: any) => {
 import { Command } from 'commander'
 import path from 'path'
 import os from 'os'
-import { closeDb } from '@/store/db'
-import { authCommand } from '@/commands/auth'
-import { doctorCommand } from '@/commands/doctor'
-import { syncCommand } from '@/commands/sync'
-import { messagesCommand } from '@/commands/messages'
-import { sendCommand } from '@/commands/send'
-import { mediaCommand } from '@/commands/media'
-import { historyCommand } from '@/commands/history'
-import { presenceCommand } from '@/commands/presence'
-import { contactsCommand } from '@/commands/contacts'
-import { chatsCommand } from '@/commands/chats'
-import { groupsCommand } from '@/commands/groups'
-import { versionCommand } from '@/commands/version'
+import { createRequire } from 'module'
+import { closeDb } from './store/db.js'
+import { authCommand } from './commands/auth.js'
+import { doctorCommand } from './commands/doctor.js'
+import { syncCommand } from './commands/sync.js'
+import { messagesCommand } from './commands/messages.js'
+import { sendCommand } from './commands/send.js'
+import { mediaCommand } from './commands/media.js'
+import { historyCommand } from './commands/history.js'
+import { presenceCommand } from './commands/presence.js'
+import { contactsCommand } from './commands/contacts.js'
+import { chatsCommand } from './commands/chats.js'
+import { groupsCommand } from './commands/groups.js'
+import { versionCommand } from './commands/version.js'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+const require = createRequire(import.meta.url)
 const pkg = require('../package.json') as { version: string; description: string }
 
 const DEFAULT_STORE_DIR = path.join(os.homedir(), '.whatscli')

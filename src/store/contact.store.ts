@@ -1,5 +1,5 @@
-import { getDb } from './db'
-import { defaultStoreDir } from '@/utils/jid.utils'
+import { getDb } from './db.js'
+import { defaultStoreDir } from '../utils/jid.utils.js'
 
 export interface ContactRecord {
   jid: string

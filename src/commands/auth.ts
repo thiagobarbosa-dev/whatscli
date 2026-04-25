@@ -1,11 +1,11 @@
 import { Command } from 'commander'
 import qrcode from 'qrcode-terminal'
 import chalk from 'chalk'
-import { baileysService } from '@/services/baileys.service'
-import { hasAuthState, clearAuthState } from '@/auth/state'
-import { outputSuccess, outputError } from '@/output/formatter'
-import { logger } from '@/utils/logger'
-import { defaultStoreDir } from '@/utils/jid.utils'
+import { baileysService } from '../services/baileys.service.js'
+import { hasAuthState, clearAuthState } from '../auth/state.js'
+import { outputSuccess, outputError } from '../output/formatter.js'
+import { logger } from '../utils/logger.js'
+import { defaultStoreDir } from '../utils/jid.utils.js'
 
 // ─── Root: `whatscli auth` ───────────────────────────────────────────────────
 

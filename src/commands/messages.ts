@@ -1,10 +1,10 @@
 import { Command } from 'commander'
 import path from 'path'
 import os from 'os'
-import { getDb } from '@/store/db'
-import { messageStore } from '@/store/message.store'
-import { outputList, outputRecord, outputError } from '@/output/formatter'
-import { normalizeJid, defaultStoreDir } from '@/utils/jid.utils'
+import { getDb } from '../store/db.js'
+import { messageStore } from '../store/message.store.js'
+import { outputList, outputRecord, outputError } from '../output/formatter.js'
+import { normalizeJid, defaultStoreDir } from '../utils/jid.utils.js'
 
 export const messagesCommand = new Command('messages')
   .description('Manage and search synced messages')

@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { baileysService } from '@/services/baileys.service'
-import { defaultStoreDir, normalizeJid } from '@/utils/jid.utils'
-import { logger } from '@/utils/logger'
+import { baileysService } from '../services/baileys.service.js'
+import { defaultStoreDir, normalizeJid } from '../utils/jid.utils.js'
+import { logger } from '../utils/logger.js'
 import { WAPresence } from '@whiskeysockets/baileys'
 
 export const presenceCommand = new Command('presence')

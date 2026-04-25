@@ -1,7 +1,7 @@
 import { WAMessage, isJidGroup } from '@whiskeysockets/baileys'
-import { messageStore, MessageRecord } from '@/store/message.store'
-import { logger } from '@/utils/logger'
-import { normalizeJid } from '@/utils/jid.utils'
+import { messageStore, MessageRecord } from '../store/message.store.js'
+import { logger } from '../utils/logger.js'
+import { normalizeJid } from '../utils/jid.utils.js'
 
 export class MessageService {
   /**

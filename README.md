@@ -31,6 +31,12 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 
 ---
 
+## Requirements
+
+- **Node.js**: >= 20.17.0 or >= 22.9.0 (LTS versions are highly recommended).
+- **npm**: Compatible with the chosen Node.js version.
+- **Native Modules**: If pre-built binaries for `sharp` are not available for your environment, ensure you have build tools installed (`make`, `g++`, `python`).
+
 ## Installation
 
 ### Via Homebrew (Recommended for macOS/Linux)

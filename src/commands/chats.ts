@@ -1,6 +1,6 @@
 import { Command } from 'commander'
-import { chatStore } from '@/store/chat.store'
-import { normalizeJid } from '@/utils/jid.utils'
+import { chatStore } from '../store/chat.store.js'
+import { normalizeJid } from '../utils/jid.utils.js'
 
 
 export const chatsCommand = new Command('chats')

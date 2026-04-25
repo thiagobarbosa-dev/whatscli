@@ -1,8 +1,8 @@
 import { Contact, Chat } from '@whiskeysockets/baileys'
-import { contactStore } from '@/store/contact.store'
-import { chatStore } from '@/store/chat.store'
-import { normalizeJid } from '@/utils/jid.utils'
-import { logger } from '@/utils/logger'
+import { contactStore } from '../store/contact.store.js'
+import { chatStore } from '../store/chat.store.js'
+import { normalizeJid } from '../utils/jid.utils.js'
+import { logger } from '../utils/logger.js'
 
 export class ContactService {
   handleContactUpsert(contacts: Contact[]): void {
