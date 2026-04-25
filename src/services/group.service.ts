@@ -1,6 +1,7 @@
 import { baileysService } from './baileys.service.js'
 import { GroupMetadata, ParticipantAction } from '@whiskeysockets/baileys'
 import { normalizeJid } from '../utils/jid.utils.js'
+import { chatStore } from '../store/chat.store.js'
 
 export class GroupService {
   async getGroupMetadata(storeDir: string, groupJid: string): Promise<GroupMetadata> {
@@ -14,6 +15,16 @@ export class GroupService {
             try {
               const sock = baileysService.getSocket()
               const metadata = await sock.groupMetadata(groupJid)
+              
+              // Persist to store so search works
+              chatStore.upsert({
+                jid: groupJid,
+                name: metadata.subject,
+                unread_count: 0,
+                last_message_at: metadata.creation || null,
+                is_group: 1
+              })
+
               setTimeout(() => baileysService.disconnect(), 1000)
               resolve(metadata)
             } catch (err) {
