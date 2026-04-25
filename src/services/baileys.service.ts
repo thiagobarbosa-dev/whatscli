@@ -2,6 +2,8 @@ import makeWASocket, {
   DisconnectReason,
   WASocket,
   ConnectionState,
+  Browsers,
+  fetchLatestWaWebVersion
 } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
 import { getAuthState } from '@/auth/state'
@@ -29,14 +31,19 @@ class BaileysService {
 
   private async _createSocket(opts: ConnectOptions): Promise<WASocket> {
     const { state, saveCreds } = await getAuthState(opts.storeDir)
+    
+    // Fetch latest WA Web version to avoid 405 Connection Failure due to outdated version
+    const { version } = await fetchLatestWaWebVersion()
+    logger.debug({ version }, 'Fetched latest wa web version')
 
     const socket = makeWASocket({
+      version,
       auth: state,
       // Don't let Baileys print raw QR — we handle it ourselves
       printQRInTerminal: false,
       // Suppress Baileys' internal noise; we log at our level
       logger: logger.child({ name: 'baileys' }) as Parameters<typeof makeWASocket>[0]['logger'],
-      browser: ['WhatsCLI', 'Chrome', '1.0.0'],
+      browser: Browsers.macOS('Desktop'),
     })
 
     this.socket = socket
@@ -109,7 +116,8 @@ class BaileysService {
   /** Gracefully disconnect without triggering reconnect. */
   disconnect(): void {
     this.shouldReconnect = false
-    this.socket?.end(new Error('manual disconnect'))
+    this.socket?.ev.flush()
+    this.socket?.ws.close()
     this.socket = null
   }
 }

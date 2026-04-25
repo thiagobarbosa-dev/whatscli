@@ -67,7 +67,7 @@ function runMigrations(db: InstanceType<typeof Database>): void {
   for (const migration of migrations) {
     if (!applied.includes(migration.version)) {
       logger.debug({ version: migration.version }, 'Applying database migration')
-      db.run(migration.sql)
+      db.exec(migration.sql)
       db.run('INSERT INTO schema_migrations (version) VALUES (?)', [migration.version])
     }
   }
@@ -95,6 +95,54 @@ const migrations: Migration[] = [
         last_message_at  INTEGER,
         is_group         INTEGER NOT NULL DEFAULT 0,
         updated_at       INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+    `,
+  },
+  {
+    version: 2,
+    sql: `
+      CREATE TABLE IF NOT EXISTS messages (
+        id          TEXT PRIMARY KEY,
+        chat_jid    TEXT NOT NULL,
+        sender_jid  TEXT NOT NULL,
+        from_me     INTEGER NOT NULL DEFAULT 0,
+        timestamp   INTEGER NOT NULL,
+        type        TEXT NOT NULL,
+        content     TEXT,
+        quoted_id   TEXT,
+        media_path  TEXT,
+        raw_json    TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_messages_chat ON messages(chat_jid);
+      CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);
+
+      -- Full-text search via FTS5
+      CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
+        message_id UNINDEXED,
+        content
+      );
+    `,
+  },
+  {
+    version: 3,
+    sql: `
+      -- Healing migration: creating tables missed by previously using run() instead of exec()
+      CREATE TABLE IF NOT EXISTS chats (
+        jid              TEXT PRIMARY KEY,
+        name             TEXT,
+        unread_count     INTEGER NOT NULL DEFAULT 0,
+        last_message_at  INTEGER,
+        is_group         INTEGER NOT NULL DEFAULT 0,
+        updated_at       INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_messages_chat ON messages(chat_jid);
+      CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);
+
+      CREATE VIRTUAL TABLE IF NOT EXISTS messages_fts USING fts5(
+        message_id UNINDEXED,
+        content
       );
     `,
   },
