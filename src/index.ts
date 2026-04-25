@@ -16,6 +16,10 @@ import { authCommand } from '@/commands/auth'
 import { doctorCommand } from '@/commands/doctor'
 import { syncCommand } from '@/commands/sync'
 import { messagesCommand } from '@/commands/messages'
+import { sendCommand } from '@/commands/send'
+import { mediaCommand } from '@/commands/media'
+import { historyCommand } from '@/commands/history'
+import { presenceCommand } from '@/commands/presence'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require('../package.json') as { version: string; description: string }
@@ -42,6 +46,10 @@ program.addCommand(authCommand)
 program.addCommand(doctorCommand)
 program.addCommand(syncCommand)
 program.addCommand(messagesCommand)
+program.addCommand(sendCommand)
+program.addCommand(mediaCommand)
+program.addCommand(historyCommand)
+program.addCommand(presenceCommand)
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 process.on('exit', () => closeDb())

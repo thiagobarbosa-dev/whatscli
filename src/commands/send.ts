@@ -1,0 +1,131 @@
+import { Command } from 'commander'
+import { baileysService } from '@/services/baileys.service'
+import { defaultStoreDir, normalizeJid } from '@/utils/jid.utils'
+import { logger } from '@/utils/logger'
+import { AnyMessageContent } from '@whiskeysockets/baileys'
+import { mediaService } from '@/services/media.service'
+
+export const sendCommand = new Command('send')
+  .description('Send messages to a contact or group')
+
+// Wait for the connection to be fully open before sending
+async function connectAndExecute(storeDir: string, action: (sock: any) => Promise<void>) {
+  return new Promise<void>((resolve, reject) => {
+    let executed = false
+
+    baileysService.connect({
+      storeDir,
+      onConnectionUpdate: async (update) => {
+        const { connection } = update
+        if (connection === 'open' && !executed) {
+          executed = true
+          try {
+            const sock = baileysService.getSocket()
+            await action(sock)
+            // Wait a moment for the message to be dispatched over the wire
+            setTimeout(() => {
+              baileysService.disconnect()
+              resolve()
+            }, 2000)
+          } catch (err) {
+            reject(err)
+          }
+        }
+      }
+    }).catch(reject)
+  })
+}
+
+// Subcommand: send text
+sendCommand
+  .command('text')
+  .description('Send a text message')
+  .requiredOption('--to <number>', 'Recipient phone number or JID')
+  .requiredOption('--message <text>', 'Text content of the message')
+  .option('--quote <msg_id>', 'ID of the message to quote')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (options) => {
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(options.to)
+    
+    try {
+      await connectAndExecute(storeDir, async (sock) => {
+        logger.info({ to: jid }, 'Sending text message...')
+        
+        const content: AnyMessageContent = { text: options.message }
+        
+        const sendOpts: any = {}
+        if (options.quote) {
+          sendOpts.quoted = {
+            key: { id: options.quote, remoteJid: jid, fromMe: false },
+            message: { conversation: '' } // Minimum required for Baileys to quote
+          }
+        }
+
+        const sentMsg = await sock.sendMessage(jid, content, sendOpts)
+        logger.info({ id: sentMsg?.key.id }, 'Message sent successfully')
+      })
+    } catch (err) {
+      logger.error({ err }, 'Failed to send text message')
+      process.exit(1)
+    }
+  })
+
+// Subcommand: send file
+sendCommand
+  .command('file')
+  .description('Send a media file (image, video, document, audio)')
+  .requiredOption('--to <number>', 'Recipient phone number or JID')
+  .requiredOption('--file <path>', 'Path to the local file to send')
+  .option('--caption <caption>', 'Optional caption for images/videos/documents')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (options) => {
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(options.to)
+    
+    try {
+      await connectAndExecute(storeDir, async (sock) => {
+        logger.info({ to: jid, file: options.file }, 'Preparing to send file...')
+        
+        const content = await mediaService.prepareMediaContent(options.file, options.caption)
+        const sentMsg = await sock.sendMessage(jid, content)
+        
+        logger.info({ id: sentMsg?.key.id }, 'File sent successfully')
+      })
+    } catch (err) {
+      logger.error({ err }, 'Failed to send file')
+      process.exit(1)
+    }
+  })
+
+// Subcommand: send react
+sendCommand
+  .command('react')
+  .description('React to a specific message')
+  .requiredOption('--to <number>', 'Chat JID where the message is located')
+  .requiredOption('--message-id <msg_id>', 'ID of the message to react to')
+  .requiredOption('--emoji <emoji>', 'Emoji to use (use empty string to remove reaction)')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (options) => {
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(options.to)
+    
+    try {
+      await connectAndExecute(storeDir, async (sock) => {
+        logger.info({ to: jid, msgId: options.messageId, emoji: options.emoji }, 'Sending reaction...')
+        
+        const content = {
+          react: {
+            text: options.emoji, // empty string removes the reaction
+            key: { id: options.messageId, remoteJid: jid, fromMe: false }
+          }
+        }
+
+        await sock.sendMessage(jid, content)
+        logger.info('Reaction sent successfully')
+      })
+    } catch (err) {
+      logger.error({ err }, 'Failed to send reaction')
+      process.exit(1)
+    }
+  })
