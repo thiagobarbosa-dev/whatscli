@@ -110,7 +110,7 @@ whatscli doctor
 | **History** | `history backfill` | Request older history |
 | **Contacts** | `contacts search\|show` | Search and view contacts |
 | **Chats** | `chats list\|show` | List conversations |
-| **Groups** | `groups list\|info\|rename\|leave\|participants` | Manage groups and members |
+| **Groups** | `groups list\|search\|members\|info\|rename\|leave\|participants` | Manage groups and members |
 | **Presence** | `presence typing\|recording\|paused` | Presence indicators |
 | **Doctor** | `doctor` | Environment diagnostics |
 

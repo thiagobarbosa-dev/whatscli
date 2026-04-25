@@ -9,6 +9,14 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [1.1.0] - 2026-04-25
+
+### Added
+- `whatscli groups search <query>` — search groups locally by name or JID.
+- Added `--query <text>` option to `whatscli groups list` for consistent filtering.
+- `whatscli groups members <jid>` — list all members of a group with names from local contact store.
+- Implemented `ChatStore.search()` for SQLite-based group discovery.
+
 ## [1.0.0] - 2026-04-25
 
 ### Breaking Changes

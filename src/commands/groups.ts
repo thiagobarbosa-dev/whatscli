@@ -1,6 +1,7 @@
 import { Command } from 'commander'
 import { groupService } from '../services/group.service.js'
 import { chatStore } from '../store/chat.store.js'
+import { contactStore } from '../store/contact.store.js'
 import { normalizeJid, defaultStoreDir } from '../utils/jid.utils.js'
 import { ParticipantAction } from '@whiskeysockets/baileys'
 
@@ -10,13 +11,18 @@ export const groupsCommand = new Command('groups')
 groupsCommand
   .command('list')
   .description('List all groups you are part of')
+  .option('--query <text>', 'Filter groups by name or JID')
   .option('--json', 'Output raw JSON array')
   .action(async (options, cmd) => {
     const isJson = options.json || cmd.parent?.opts()?.json
 
     try {
-      // We can get the groups from the chatStore by filtering is_group = 1
-      const results = chatStore.list({ limit: 1000 }).filter(c => c.is_group === 1)
+      let results: any[]
+      if (options.query) {
+        results = chatStore.search(options.query)
+      } else {
+        results = chatStore.list({ limit: 1000 }).filter(c => c.is_group === 1)
+      }
 
       if (isJson) {
         console.log(JSON.stringify(results))
@@ -24,7 +30,7 @@ groupsCommand
       }
 
       if (results.length === 0) {
-        console.log('No groups found.')
+        console.log(options.query ? `No groups found matching "${options.query}".` : 'No groups found.')
         return
       }
 
@@ -36,6 +42,39 @@ groupsCommand
       console.log('')
     } catch (err) {
       console.error('Failed to list groups', err)
+      process.exit(1)
+    }
+  })
+
+groupsCommand
+  .command('search')
+  .description('Search groups locally by name or JID')
+  .argument('<query>', 'Search term')
+  .option('--json', 'Output raw JSON array')
+  .action(async (query, options, cmd) => {
+    const isJson = options.json || cmd.parent?.opts()?.json
+
+    try {
+      const results = chatStore.search(query)
+
+      if (isJson) {
+        console.log(JSON.stringify(results))
+        return
+      }
+
+      if (results.length === 0) {
+        console.log(`No groups found matching "${query}".`)
+        return
+      }
+
+      console.log(`\nFound ${results.length} groups:\n`)
+      for (const c of results) {
+        const nameDisplay = c.name || c.jid
+        console.log(`- ${nameDisplay} (${c.jid})`)
+      }
+      console.log('')
+    } catch (err) {
+      console.error('Failed to search groups', err)
       process.exit(1)
     }
   })
@@ -78,6 +117,54 @@ groupsCommand
       console.log('')
     } catch (err) {
       console.error('Failed to fetch group info', err)
+      process.exit(1)
+    }
+  })
+
+groupsCommand
+  .command('members')
+  .description('List all members of a group with their names (if known)')
+  .argument('<jid>', 'Group JID')
+  .option('--json', 'Output raw JSON')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (jidInput, options, cmd) => {
+    const isJson = options.json || cmd.parent?.opts()?.json
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(jidInput)
+
+    if (!jid.endsWith('@g.us')) {
+      console.error('Invalid Group JID. Must end with @g.us')
+      process.exit(1)
+    }
+
+    try {
+      if (!isJson) console.log(`Fetching members for ${jid}...`)
+      const metadata = await groupService.getGroupMetadata(storeDir, jid)
+      
+      const members = metadata.participants.map(p => {
+        const contact = contactStore.get(p.id)
+        return {
+          jid: p.id,
+          name: contact?.name || contact?.pushname || null,
+          admin: p.admin || null
+        }
+      })
+
+      if (isJson) {
+        console.log(JSON.stringify(members))
+        return
+      }
+
+      console.log(`\nMembers of "${metadata.subject}" (${members.length}):\n`)
+      for (const m of members) {
+        const phone = m.jid.split('@')[0]
+        const namePart = m.name ? `${m.name}` : 'Unknown'
+        const adminPart = m.admin ? `[${m.admin}] ` : ''
+        console.log(`- ${adminPart}${namePart}: ${phone} (${m.jid})`)
+      }
+      console.log('')
+    } catch (err) {
+      console.error('Failed to fetch group members', err)
       process.exit(1)
     }
   })
