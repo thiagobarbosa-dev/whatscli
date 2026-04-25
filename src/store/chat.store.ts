@@ -47,6 +47,16 @@ export class ChatStore {
       [limit, offset]
     ) as unknown as ChatRecord[]
   }
+
+  search(query: string): ChatRecord[] {
+    const db = getDb(defaultStoreDir())
+    return db.all(
+      `SELECT * FROM chats 
+       WHERE (name LIKE ? OR jid LIKE ?) AND is_group = 1
+       ORDER BY last_message_at DESC NULLS LAST`,
+      [`%${query}%`, `%${query}%`]
+    ) as unknown as ChatRecord[]
+  }
 }
 
 export const chatStore = new ChatStore()
