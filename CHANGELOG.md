@@ -9,6 +9,12 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [0.8.1] - 2026-04-25
+
+### Fixed
+- Resolve module path aliases (`@/`) in production builds using `tsconfig-paths`.
+- Move `tsconfig-paths` to production dependencies.
+
 ## [0.8.0] - 2026-04-25
 
 ### Added
