@@ -9,6 +9,11 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [0.8.3] - 2026-04-25
+
+### Fixed
+- Handle `EPIPE` (Broken Pipe) errors gracefully when piping output to other commands (e.g., `head`), preventing Node.js crashes.
+
 ## [0.8.2] - 2026-04-25
 
 ### Fixed

@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+// Fix EPIPE errors (Broken Pipe) when piping output (e.g., to 'head')
+process.stdout.on('error', (err: any) => {
+  if (err.code === 'EPIPE') process.exit(0)
+})
+process.stderr.on('error', (err: any) => {
+  if (err.code === 'EPIPE') process.exit(0)
+})
+
 /**
  * WhatsCLI entrypoint
  *
