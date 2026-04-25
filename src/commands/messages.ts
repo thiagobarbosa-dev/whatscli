@@ -59,7 +59,15 @@ messagesCommand
     const globalOpts = cmd.parent?.parent?.opts() ?? {}
     try {
       const db = require('@/store/db').getDb(globalOpts['store'] ?? process.env.WHATSCLI_STORE_DIR ?? require('path').join(require('os').homedir(), '.whatscli'))
-      const msg = db.prepare('SELECT * FROM messages WHERE id = ?').get(id)
+      const msg = db.prepare(`
+        SELECT m.*, 
+               COALESCE(c.name, '') as chat_name,
+               COALESCE(u.name, u.short_name, u.alias, '') as sender_name
+        FROM messages m
+        LEFT JOIN chats c ON m.chat_jid = c.jid
+        LEFT JOIN contacts u ON m.sender_jid = u.jid
+        WHERE m.id = ?
+      `).get(id)
       
       if (!msg) {
         outputError(`Message ${id} not found`, globalOpts)
@@ -92,10 +100,15 @@ messagesCommand
       const limit = parseInt(opts.limit, 10)
       
       const rows = db.prepare(`
-        SELECT * FROM messages
-        WHERE chat_jid = ?
-        AND timestamp BETWEEN ? AND ?
-        ORDER BY timestamp ASC
+        SELECT m.*,
+               COALESCE(c.name, '') as chat_name,
+               COALESCE(u.name, u.short_name, u.alias, '') as sender_name
+        FROM messages m
+        LEFT JOIN chats c ON m.chat_jid = c.jid
+        LEFT JOIN contacts u ON m.sender_jid = u.jid
+        WHERE m.chat_jid = ?
+        AND m.timestamp BETWEEN ? AND ?
+        ORDER BY m.timestamp ASC
       `).all(msg.chat_jid, msg.timestamp - 3600 * 24, msg.timestamp + 3600 * 24) as any[]
 
       const idx = rows.findIndex((r) => r.id === id)

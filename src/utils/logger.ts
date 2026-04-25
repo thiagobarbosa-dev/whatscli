@@ -14,8 +14,10 @@ export const logger = pino(
             translateTime: 'SYS:HH:MM:ss',
             ignore: 'pid,hostname',
             messageFormat: '{msg}',
+            destination: 2 // stderr
           },
         },
       }
-    : { level }
+    : { level },
+  pino.destination(2) // stderr for production as well
 )

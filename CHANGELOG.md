@@ -70,8 +70,19 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 - "Ghost chat" issue in Brazil (DDD with 9th digit) by adding `sock.onWhatsApp` Smart JID resolution before sending messages
 - CLI 17-second hang and 428 Connection Replaced errors by implementing graceful `socket.end(undefined)` and immediate `process.exit(0)` upon send completion
 
+## [0.6.0] - 2026-04-24
+
+### Added
+- `--read-only` flag globally enforced via `preAction` hook to block all commands that mutate WhatsApp state.
+- `whatscli doctor --connect` to verify live end-to-end connection to WhatsApp.
+- `whatscli version` command to display current `whatscli` and Baileys versions.
+- Added `chat_name` and `sender_name` explicitly to OpenClaw JSON payload via FTS/SQLite JOINs.
+
+### Changed
+- Enforced strict `OpenClawOutput` interface in JSON mode, ensuring no data leaks of internal Baileys objects.
+- Redirected pino `DEBUG` and `INFO` logs strictly to `stderr` to guarantee that `stdout` emits flawless NDJSON output.
+
 <!--
-## [1.0.0] - YYYY-MM-DD
 
 ### Added
 - OpenClaw JSON output schema finalized and validated

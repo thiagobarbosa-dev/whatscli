@@ -100,8 +100,10 @@ When using `--json` or piping, output follows this schema:
 ```json
 {
   "id": "MSG_ID",
-  "chat": "5511999999999@s.whatsapp.net",
-  "sender": "5511999999999@s.whatsapp.net",
+  "chat": "120363092701757641@g.us",
+  "chat_name": "GP da EasyPallet",
+  "sender": "558394442942@s.whatsapp.net",
+  "sender_name": "Rômulo Silva",
   "from_me": false,
   "timestamp": 1714000000,
   "type": "text",
@@ -125,8 +127,6 @@ npm run build
 # Lint
 npm run lint
 ```
-
-See [`Docs/`](./Docs/) for detailed architecture, roadmap, and implementation plan.
 
 ---
 
