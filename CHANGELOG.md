@@ -9,6 +9,11 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [0.8.5] - 2026-04-25
+
+### Changed
+- Rename package to `@thiagobarbosa-dev/whatscli` to avoid naming conflicts on NPM registry.
+
 ## [0.8.4] - 2026-04-25
 
 ### Fixed
