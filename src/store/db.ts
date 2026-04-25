@@ -7,10 +7,11 @@
  * API is intentionally similar to better-sqlite3 for easy future migration.
  */
 
-import { Database } from 'node-sqlite3-wasm'
+import pkg from 'node-sqlite3-wasm'
+const { Database } = pkg
 import path from 'path'
 import fs from 'fs'
-import { logger } from '@/utils/logger'
+import { logger } from '../utils/logger.js'
 
 let _db: InstanceType<typeof Database> | null = null
 

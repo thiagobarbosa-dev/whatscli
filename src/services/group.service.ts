@@ -1,6 +1,6 @@
-import { baileysService } from './baileys.service'
+import { baileysService } from './baileys.service.js'
 import { GroupMetadata, ParticipantAction } from '@whiskeysockets/baileys'
-import { normalizeJid } from '@/utils/jid.utils'
+import { normalizeJid } from '../utils/jid.utils.js'
 
 export class GroupService {
   async getGroupMetadata(storeDir: string, groupJid: string): Promise<GroupMetadata> {

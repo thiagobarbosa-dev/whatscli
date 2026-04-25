@@ -6,8 +6,8 @@ import makeWASocket, {
   fetchLatestWaWebVersion
 } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
-import { getAuthState } from '@/auth/state'
-import { logger } from '@/utils/logger'
+import { getAuthState } from '../auth/state.js'
+import { logger } from '../utils/logger.js'
 
 export interface ConnectOptions {
   storeDir: string
@@ -42,7 +42,7 @@ class BaileysService {
       // Don't let Baileys print raw QR — we handle it ourselves
       printQRInTerminal: false,
       // Suppress Baileys' internal noise; we log at our level
-      logger: logger.child({ name: 'baileys' }) as Parameters<typeof makeWASocket>[0]['logger'],
+      logger: logger.child({ name: 'baileys' }, { level: 'warn' }) as Parameters<typeof makeWASocket>[0]['logger'],
       browser: Browsers.ubuntu('Desktop'),
     })
 

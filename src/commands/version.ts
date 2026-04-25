@@ -1,4 +1,7 @@
 import { Command } from 'commander'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 
 export const versionCommand = new Command('version')
   .description('Print package version and Baileys version')

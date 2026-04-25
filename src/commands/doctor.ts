@@ -1,10 +1,10 @@
 import { Command } from 'commander'
 import fs from 'fs'
 import chalk from 'chalk'
-import { hasAuthState } from '@/auth/state'
-import { getDb } from '@/store/db'
-import { logger } from '@/utils/logger'
-import { defaultStoreDir } from '@/utils/jid.utils'
+import { hasAuthState } from '../auth/state.js'
+import { getDb } from '../store/db.js'
+import { logger } from '../utils/logger.js'
+import { defaultStoreDir } from '../utils/jid.utils.js'
 
 interface CheckResult {
   name: string
@@ -57,7 +57,7 @@ export const doctorCommand = new Command('doctor')
         checks.push({ name: 'live_connection', ok: false, detail: 'Skipped (no auth state)' })
       } else {
         try {
-          const { baileysService } = require('@/services/baileys.service')
+          const { baileysService } = await import('../services/baileys.service.js')
           await new Promise<void>((resolve, reject) => {
             let connected = false
             baileysService.connect({

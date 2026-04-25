@@ -1,9 +1,9 @@
 import { Command } from 'commander'
-import { baileysService } from '@/services/baileys.service'
-import { defaultStoreDir, normalizeJid } from '@/utils/jid.utils'
-import { logger } from '@/utils/logger'
+import { baileysService } from '../services/baileys.service.js'
+import { defaultStoreDir, normalizeJid } from '../utils/jid.utils.js'
+import { logger } from '../utils/logger.js'
 import { AnyMessageContent } from '@whiskeysockets/baileys'
-import { mediaService } from '@/services/media.service'
+import { mediaService } from '../services/media.service.js'
 
 export const sendCommand = new Command('send')
   .description('Send messages to a contact or group')

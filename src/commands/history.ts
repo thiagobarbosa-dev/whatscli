@@ -1,9 +1,9 @@
 import { Command } from 'commander'
-import { baileysService } from '@/services/baileys.service'
-import { defaultStoreDir } from '@/utils/jid.utils'
-import { logger } from '@/utils/logger'
-import { messageService } from '@/services/message.service'
-import { contactService } from '@/services/contact.service'
+import { baileysService } from '../services/baileys.service.js'
+import { defaultStoreDir } from '../utils/jid.utils.js'
+import { logger } from '../utils/logger.js'
+import { messageService } from '../services/message.service.js'
+import { contactService } from '../services/contact.service.js'
 
 export const historyCommand = new Command('history')
   .description('Manage message history')

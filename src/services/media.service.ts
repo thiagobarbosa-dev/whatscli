@@ -2,8 +2,8 @@ import { AnyMessageContent, downloadMediaMessage, WAMessage } from '@whiskeysock
 import mime from 'mime-types'
 import fs from 'fs'
 import path from 'path'
-import { logger } from '@/utils/logger'
-import { baileysService } from '@/services/baileys.service'
+import { logger } from '../utils/logger.js'
+import { baileysService } from './baileys.service.js'
 
 export class MediaService {
   /**

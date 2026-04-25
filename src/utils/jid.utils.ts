@@ -39,3 +39,8 @@ export function jidToPhone(jid: string): string {
 export function isGroupJid(jid: string): boolean {
   return jid.endsWith('@g.us')
 }
+
+/** Returns true if the JID is a LID (Local Identifier) — Baileys v7+ */
+export function isLidJid(jid: string): boolean {
+  return jid.endsWith('@lid')
+}

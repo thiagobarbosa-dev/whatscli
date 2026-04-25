@@ -9,6 +9,20 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [1.0.0] - 2026-04-25
+
+### Breaking Changes
+- **ESM Migration**: The project has been fully migrated to ECMAScript Modules (ESM). This resolves `ERR_REQUIRE_ESM` issues with modern dependencies.
+- **Baileys v7**: Upgraded to `@whiskeysockets/baileys@7.0.0-rc.9`. This brings support for the new WhatsApp LID (Local Identifier) system.
+- **Node.js Requirement**: Minimum Node.js version is now `v20.17.0` (or `v20.0.0` with compatible npm).
+
+### Changed
+- Replaced `ts-node` with `tsx` for a better ESM development experience.
+- Updated `tsconfig.json` to use `Node16` resolution.
+- Fixed `node-sqlite3-wasm` imports for ESM compatibility.
+- Added `postbuild` script to automatically set executable permissions on the CLI binary.
+- Optimized dependency list (removed unnecessary build tools).
+
 ## [0.8.6] - 2026-04-25
 
 ### Added

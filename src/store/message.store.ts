@@ -1,6 +1,6 @@
-import { getDb } from '@/store/db'
-import { defaultStoreDir } from '@/utils/jid.utils'
-import { logger } from '@/utils/logger'
+import { getDb } from './db.js'
+import { defaultStoreDir } from '../utils/jid.utils.js'
+import { logger } from '../utils/logger.js'
 
 export interface MessageRecord {
   id: string

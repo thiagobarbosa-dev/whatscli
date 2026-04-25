@@ -1,11 +1,11 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
-import { baileysService } from '@/services/baileys.service'
-import { messageService } from '@/services/message.service'
-import { contactService } from '@/services/contact.service'
-import { outputSuccess, outputError } from '@/output/formatter'
-import { logger } from '@/utils/logger'
-import { defaultStoreDir } from '@/utils/jid.utils'
+import { baileysService } from '../services/baileys.service.js'
+import { messageService } from '../services/message.service.js'
+import { contactService } from '../services/contact.service.js'
+import { outputSuccess, outputError } from '../output/formatter.js'
+import { logger } from '../utils/logger.js'
+import { defaultStoreDir } from '../utils/jid.utils.js'
 
 export const syncCommand = new Command('sync')
   .description('Sync messages and data locally')

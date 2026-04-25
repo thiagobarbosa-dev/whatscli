@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { contactStore } from '@/store/contact.store'
-import { defaultStoreDir, normalizeJid } from '@/utils/jid.utils'
-import { outputSuccess } from '@/output/formatter'
+import { contactStore } from '../store/contact.store.js'
+import { defaultStoreDir, normalizeJid } from '../utils/jid.utils.js'
+import { outputSuccess } from '../output/formatter.js'
 
 export const contactsCommand = new Command('contacts')
   .description('Manage and search contacts')

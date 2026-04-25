@@ -1,7 +1,7 @@
 import { useMultiFileAuthState } from '@whiskeysockets/baileys'
 import path from 'path'
 import fs from 'fs'
-import { logger } from '@/utils/logger'
+import { logger } from '../utils/logger.js'
 
 /** Returns the path to the auth directory inside the store. */
 function authDir(storeDir: string): string {
