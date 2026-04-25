@@ -33,20 +33,38 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 
 ## Installation
 
-### Global install (recommended)
+### Via Homebrew (Recommended for macOS/Linux)
+
+```bash
+brew tap thiagobarbosa-dev/tap
+brew install whatscli
+```
+
+### Via NPM (Global)
 
 ```bash
 npm install -g whatscli
 ```
 
-### From source
+### From Source
 
-```bash
-git clone https://github.com/thiagobarbosa-dev/whatscli
-cd whatscli
-npm install
-npm run build
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/thiagobarbosa-dev/whatscli.git
+   cd whatscli
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Build the project:
+   ```bash
+   npm run build
+   ```
+4. Link for global usage:
+   ```bash
+   npm link
+   ```
 
 ---
 
