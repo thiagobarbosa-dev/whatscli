@@ -9,6 +9,11 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [0.8.6] - 2026-04-25
+
+### Added
+- Added `node-addon-api` as a dependency to improve compatibility with `sharp` (native dependency of Baileys).
+
 ## [0.8.5] - 2026-04-25
 
 ### Changed
