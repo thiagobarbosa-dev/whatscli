@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import { baileysService } from '../services/baileys.service.js'
 import { messageService } from '../services/message.service.js'
 import { contactService } from '../services/contact.service.js'
+import { groupService } from '../services/group.service.js'
 import { outputSuccess, outputError } from '../output/formatter.js'
 import { logger } from '../utils/logger.js'
 import { defaultStoreDir } from '../utils/jid.utils.js'
@@ -71,13 +72,29 @@ export const syncCommand = new Command('sync')
         resetTimeout()
       })
 
-      socket.ev.on('chats.upsert', (chats) => {
+      socket.ev.on('chats.upsert', async (chats) => {
         contactService.handleChatUpsert(chats)
+        
+        // Auto-fetch metadata for groups without names
+        for (const chat of chats) {
+          if (chat.id.endsWith('@g.us') && !chat.name) {
+            groupService.getGroupMetadata(storeDir, chat.id).catch(() => {
+              // Ignore errors during background sync
+            })
+          }
+        }
         resetTimeout()
       })
 
-      socket.ev.on('chats.update', (chats) => {
+      socket.ev.on('chats.update', async (chats) => {
         contactService.handleChatUpdate(chats)
+        
+        // Auto-fetch metadata for groups without names if updated
+        for (const chat of chats) {
+          if (chat.id && chat.id.endsWith('@g.us') && chat.name === null) {
+             groupService.getGroupMetadata(storeDir, chat.id).catch(() => {})
+          }
+        }
         resetTimeout()
       })
 
