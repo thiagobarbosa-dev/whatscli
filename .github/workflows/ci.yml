@@ -43,4 +43,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npm audit --audit-level=critical
+      # Note: @whiskeysockets/baileys installs via a git reference that bundles its own
+      # protobufjs copy (GHSA-xq3m-2v4x-88gg). npm overrides cannot reach git-embedded
+      # nested node_modules. We audit at 'high' level and track upstream fix via Dependabot.
+      - run: npm audit --audit-level=high
