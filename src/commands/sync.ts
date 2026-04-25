@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import { baileysService } from '../services/baileys.service.js'
 import { messageService } from '../services/message.service.js'
 import { contactService } from '../services/contact.service.js'
+import { chatStore } from '../store/chat.store.js'
 import { groupService } from '../services/group.service.js'
 import { outputSuccess, outputError } from '../output/formatter.js'
 import { logger } from '../utils/logger.js'
@@ -43,6 +44,28 @@ export const syncCommand = new Command('sync')
         onConnectionUpdate(update) {
           if (update.connection === 'open') {
             outputSuccess('Connected. Syncing messages...', globalOpts)
+            
+            // Self-healing: Fetch metadata for groups that have no name in the database
+            const namelessGroups = chatStore.list({ limit: 500 }).filter(c => c.is_group && !c.name)
+            if (namelessGroups.length > 0) {
+              logger.debug({ count: namelessGroups.length }, 'Found nameless groups, fetching metadata sequentially...')
+              
+              // Run in background but sequentially
+              ;(async () => {
+                for (const group of namelessGroups) {
+                  try {
+                    logger.debug({ jid: group.jid }, 'Fetching group metadata...')
+                    await groupService.getGroupMetadata(storeDir, group.jid)
+                    resetTimeout() // Reset timeout to keep sync alive while fetching
+                    // Small delay to be polite
+                    await new Promise(r => setTimeout(r, 1000))
+                  } catch (err) {
+                    logger.debug({ jid: group.jid, err }, 'Failed to auto-fetch group metadata')
+                  }
+                }
+              })()
+            }
+            
             resetTimeout()
           }
         },
@@ -77,7 +100,8 @@ export const syncCommand = new Command('sync')
         
         // Auto-fetch metadata for groups without names
         for (const chat of chats) {
-          if (chat.id.endsWith('@g.us') && !chat.name) {
+          if (chat.id && chat.id.endsWith('@g.us') && !chat.name) {
+            logger.debug({ jid: chat.id }, 'Auto-fetching missing group metadata')
             groupService.getGroupMetadata(storeDir, chat.id).catch(() => {
               // Ignore errors during background sync
             })
@@ -92,6 +116,7 @@ export const syncCommand = new Command('sync')
         // Auto-fetch metadata for groups without names if updated
         for (const chat of chats) {
           if (chat.id && chat.id.endsWith('@g.us') && chat.name === null) {
+             logger.debug({ jid: chat.id }, 'Auto-fetching missing group metadata (update)')
              groupService.getGroupMetadata(storeDir, chat.id).catch(() => {})
           }
         }
