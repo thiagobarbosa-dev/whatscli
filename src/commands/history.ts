@@ -3,6 +3,7 @@ import { baileysService } from '@/services/baileys.service'
 import { defaultStoreDir } from '@/utils/jid.utils'
 import { logger } from '@/utils/logger'
 import { messageService } from '@/services/message.service'
+import { contactService } from '@/services/contact.service'
 
 export const historyCommand = new Command('history')
   .description('Manage message history')
@@ -62,6 +63,27 @@ historyCommand
               messageService.handleUpsert(msg)
               totalMessagesProcessed++
             }
+            resetTimeout()
+          })
+
+          // Bind to contacts and chats
+          sock.ev.on('contacts.upsert', (contacts) => {
+            contactService.handleContactUpsert(contacts)
+            resetTimeout()
+          })
+          
+          sock.ev.on('contacts.update', (contacts) => {
+            contactService.handleContactUpdate(contacts)
+            resetTimeout()
+          })
+
+          sock.ev.on('chats.upsert', (chats) => {
+            contactService.handleChatUpsert(chats)
+            resetTimeout()
+          })
+
+          sock.ev.on('chats.update', (chats) => {
+            contactService.handleChatUpdate(chats)
             resetTimeout()
           })
 

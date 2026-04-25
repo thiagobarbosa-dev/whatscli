@@ -2,6 +2,7 @@ import { Command } from 'commander'
 import chalk from 'chalk'
 import { baileysService } from '@/services/baileys.service'
 import { messageService } from '@/services/message.service'
+import { contactService } from '@/services/contact.service'
 import { outputSuccess, outputError } from '@/output/formatter'
 import { logger } from '@/utils/logger'
 import { defaultStoreDir } from '@/utils/jid.utils'
@@ -56,6 +57,27 @@ export const syncCommand = new Command('sync')
           await messageService.handleUpsert(msg)
           syncedCount++
         }
+        resetTimeout()
+      })
+
+      // Bind to contacts and chats
+      socket.ev.on('contacts.upsert', (contacts) => {
+        contactService.handleContactUpsert(contacts)
+        resetTimeout()
+      })
+      
+      socket.ev.on('contacts.update', (contacts) => {
+        contactService.handleContactUpdate(contacts)
+        resetTimeout()
+      })
+
+      socket.ev.on('chats.upsert', (chats) => {
+        contactService.handleChatUpsert(chats)
+        resetTimeout()
+      })
+
+      socket.ev.on('chats.update', (chats) => {
+        contactService.handleChatUpdate(chats)
         resetTimeout()
       })
 

@@ -20,6 +20,9 @@ import { sendCommand } from '@/commands/send'
 import { mediaCommand } from '@/commands/media'
 import { historyCommand } from '@/commands/history'
 import { presenceCommand } from '@/commands/presence'
+import { contactsCommand } from '@/commands/contacts'
+import { chatsCommand } from '@/commands/chats'
+import { groupsCommand } from '@/commands/groups'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require('../package.json') as { version: string; description: string }
@@ -50,6 +53,9 @@ program.addCommand(sendCommand)
 program.addCommand(mediaCommand)
 program.addCommand(historyCommand)
 program.addCommand(presenceCommand)
+program.addCommand(contactsCommand)
+program.addCommand(chatsCommand)
+program.addCommand(groupsCommand)
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 process.on('exit', () => closeDb())

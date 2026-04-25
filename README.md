@@ -18,6 +18,7 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 - 🔍 **Fast search** — full-text search without internet
 - 📤 **Sending** — text, files, reactions, quoted replies
 - 👥 **Management** — contacts, chats, groups
+- 🇧🇷 **Smart JID** — automatic phone number resolution (fixes the Brazilian 9th digit ghost-chat issue)
 - 🤖 **OpenClaw-ready** — `--json` output optimized for [OpenClaw](https://openclaw.ai) ingestion
 
 ---
@@ -74,9 +75,9 @@ whatscli doctor
 | **Send** | `send text\|file\|react` | Send message, file, or reaction |
 | **Media** | `media download` | Download media from a message |
 | **History** | `history backfill` | Request older history |
-| **Contacts** | `contacts search\|show\|refresh` | Manage contacts |
+| **Contacts** | `contacts search\|show` | Search and view contacts |
 | **Chats** | `chats list\|show` | List conversations |
-| **Groups** | `groups list\|info\|rename\|leave\|...` | Manage groups |
+| **Groups** | `groups list\|info\|rename\|leave\|participants` | Manage groups and members |
 | **Presence** | `presence typing\|recording\|paused` | Presence indicators |
 | **Doctor** | `doctor` | Environment diagnostics |
 
