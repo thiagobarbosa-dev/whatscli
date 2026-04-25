@@ -9,6 +9,12 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [0.8.4] - 2026-04-25
+
+### Fixed
+- Fix binary executable path in `package.json` to ensure `whatscli` command is correctly installed via NPM.
+- Resolve minor `package.json` inconsistencies via `npm pkg fix`.
+
 ## [0.8.3] - 2026-04-25
 
 ### Fixed
