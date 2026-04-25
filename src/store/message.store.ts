@@ -13,6 +13,8 @@ export interface MessageRecord {
   quoted_id: string | null
   media_path: string | null
   raw_json: string
+  chat_name?: string
+  sender_name?: string
 }
 
 export class MessageStore {
@@ -67,15 +69,23 @@ export class MessageStore {
 
   /** Retrieve recent messages for a chat, or across all chats */
   list(options: { chat_jid?: string; limit?: number }): MessageRecord[] {
-    let sql = 'SELECT * FROM messages '
+    let sql = `
+      SELECT m.*, 
+             COALESCE(c.name, '') as chat_name,
+             COALESCE(u.name, u.short_name, u.alias, '') as sender_name
+      FROM messages m
+      LEFT JOIN chats c ON m.chat_jid = c.jid
+      LEFT JOIN contacts u ON m.sender_jid = u.jid
+      WHERE 1=1
+    `
     const params: (string | number)[] = []
 
     if (options.chat_jid) {
-      sql += 'WHERE chat_jid = ? '
+      sql += ' AND m.chat_jid = ?'
       params.push(options.chat_jid)
     }
 
-    sql += 'ORDER BY timestamp DESC LIMIT ?'
+    sql += ' ORDER BY m.timestamp DESC LIMIT ?'
     params.push(options.limit ?? 50)
 
     const rows = this.db.all(sql, params) as any[]
@@ -88,9 +98,13 @@ export class MessageStore {
   /** Full-text search using FTS5 */
   search(query: string, options: { chat_jid?: string; limit?: number }): MessageRecord[] {
     let sql = `
-      SELECT m.* 
+      SELECT m.*,
+             COALESCE(c.name, '') as chat_name,
+             COALESCE(u.name, u.short_name, u.alias, '') as sender_name
       FROM messages_fts fts
       JOIN messages m ON m.id = fts.message_id
+      LEFT JOIN chats c ON m.chat_jid = c.jid
+      LEFT JOIN contacts u ON m.sender_jid = u.jid
       WHERE messages_fts MATCH ?
     `
     const params: (string | number)[] = [query]

@@ -13,10 +13,43 @@ export interface GlobalOptions {
   full?: boolean
 }
 
+export interface OpenClawOutput {
+  id: string
+  chat: string
+  chat_name: string
+  sender: string
+  sender_name: string
+  from_me: boolean
+  timestamp: number
+  type: string
+  content: string | null
+  quoted_id: string | null
+  media_path: string | null
+}
+
+function enforceSchema(data: any): OpenClawOutput | any {
+  if (data && typeof data.id === 'string' && typeof data.chat_jid === 'string') {
+    return {
+      id: data.id,
+      chat: data.chat_jid,
+      chat_name: data.chat_name ?? '',
+      sender: data.sender_jid,
+      sender_name: data.sender_name ?? '',
+      from_me: Boolean(data.from_me),
+      timestamp: data.timestamp,
+      type: data.type,
+      content: data.content ?? null,
+      quoted_id: data.quoted_id ?? null,
+      media_path: data.media_path ?? null
+    }
+  }
+  return data
+}
+
 /** Print a single data record according to output mode. */
 export function outputRecord(data: Record<string, unknown>, opts: GlobalOptions): void {
   if (isJsonMode(opts)) {
-    process.stdout.write(JSON.stringify(data) + '\n')
+    process.stdout.write(JSON.stringify(enforceSchema(data)) + '\n')
   } else {
     printHuman(data, opts)
   }
@@ -26,7 +59,7 @@ export function outputRecord(data: Record<string, unknown>, opts: GlobalOptions)
 export function outputList(items: Record<string, unknown>[], opts: GlobalOptions): void {
   if (isJsonMode(opts)) {
     for (const item of items) {
-      process.stdout.write(JSON.stringify(item) + '\n')
+      process.stdout.write(JSON.stringify(enforceSchema(item)) + '\n')
     }
   } else {
     if (items.length === 0) {

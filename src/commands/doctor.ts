@@ -51,12 +51,43 @@ export const doctorCommand = new Command('doctor')
     checks.push({ name: 'sqlite_store', ok: dbOk, detail: dbDetail })
 
     // ── 4. Live connection (optional --connect) ────────────────────────────
+    // ── 4. Live connection (optional --connect) ────────────────────────────
     if (opts.connect) {
-      checks.push({
-        name: 'live_connection',
-        ok: false,
-        detail: 'Not implemented yet — will be available in Phase 2',
-      })
+      if (!authenticated) {
+        checks.push({ name: 'live_connection', ok: false, detail: 'Skipped (no auth state)' })
+      } else {
+        try {
+          const { baileysService } = require('@/services/baileys.service')
+          await new Promise<void>((resolve, reject) => {
+            let connected = false
+            baileysService.connect({
+              storeDir,
+              onConnectionUpdate(update: any) {
+                if (update.connection === 'open' && !connected) {
+                  connected = true
+                  setTimeout(() => {
+                    baileysService.disconnect()
+                    resolve()
+                  }, 1000)
+                } else if (update.connection === 'close' && !connected) {
+                  const code = update.lastDisconnect?.error?.output?.statusCode
+                  reject(new Error(`Connection closed (code: ${code})`))
+                }
+              }
+            }).catch(reject)
+            
+            setTimeout(() => {
+              if (!connected) {
+                baileysService.disconnect()
+                reject(new Error('Timeout connecting to WhatsApp'))
+              }
+            }, 15000)
+          })
+          checks.push({ name: 'live_connection', ok: true, detail: 'Successfully connected to WhatsApp server' })
+        } catch (err) {
+          checks.push({ name: 'live_connection', ok: false, detail: err instanceof Error ? err.message : String(err) })
+        }
+      }
     }
 
     // ── Output ─────────────────────────────────────────────────────────────
