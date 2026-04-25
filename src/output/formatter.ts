@@ -27,7 +27,7 @@ export interface OpenClawOutput {
   media_path: string | null
 }
 
-function enforceSchema(data: any): OpenClawOutput | any {
+export function enforceSchema(data: any): OpenClawOutput | any {
   if (data && typeof data.id === 'string' && typeof data.chat_jid === 'string') {
     return {
       id: data.id,

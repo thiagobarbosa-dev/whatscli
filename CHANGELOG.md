@@ -97,6 +97,8 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 - Patched critical `protobufjs` vulnerability (GHSA-xq3m-2v4x-88gg) via `npm audit fix`.
 - Removed stray `list_groups.ts` debug file from repository root.
 - Removed `package-lock.json` from `.gitignore` to guarantee reproducible installs.
+- Added `CONTRIBUTING.md` with setup guide, code style rules, and PR instructions.
+- Added unit tests with Vitest — 17 tests covering `jid.utils.ts` and `output/formatter.ts`.
 
 <!--
 
