@@ -43,7 +43,7 @@ class BaileysService {
       printQRInTerminal: false,
       // Suppress Baileys' internal noise; we log at our level
       logger: logger.child({ name: 'baileys' }) as Parameters<typeof makeWASocket>[0]['logger'],
-      browser: Browsers.macOS('Desktop'),
+      browser: Browsers.ubuntu('Desktop'),
     })
 
     this.socket = socket

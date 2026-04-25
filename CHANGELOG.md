@@ -82,6 +82,22 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 - Enforced strict `OpenClawOutput` interface in JSON mode, ensuring no data leaks of internal Baileys objects.
 - Redirected pino `DEBUG` and `INFO` logs strictly to `stderr` to guarantee that `stdout` emits flawless NDJSON output.
 
+## [0.7.0] - 2026-04-25
+
+### Added
+- `"prepare": "npm run build"` script — enables `npm install -g` global installation.
+- `"files"` whitelist in `package.json` — only ships `dist/`, `README.md`, `LICENSE`, and `CHANGELOG.md` to npm.
+
+### Changed
+- `Browsers.macOS` replaced with `Browsers.ubuntu` for cross-platform server compatibility.
+- `normalizeJid` no longer assumes Brazil (+55) as default country code — full international number now required.
+- Refactored dynamic `require()` calls in `messages.ts` to static imports.
+
+### Fixed
+- Patched critical `protobufjs` vulnerability (GHSA-xq3m-2v4x-88gg) via `npm audit fix`.
+- Removed stray `list_groups.ts` debug file from repository root.
+- Removed `package-lock.json` from `.gitignore` to guarantee reproducible installs.
+
 <!--
 
 ### Added

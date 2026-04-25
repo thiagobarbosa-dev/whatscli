@@ -32,6 +32,14 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 
 ## Installation
 
+### Global install (recommended)
+
+```bash
+npm install -g whatscli
+```
+
+### From source
+
 ```bash
 git clone https://github.com/thiagobarbosa-dev/whatscli
 cd whatscli
@@ -100,10 +108,10 @@ When using `--json` or piping, output follows this schema:
 ```json
 {
   "id": "MSG_ID",
-  "chat": "120363092701757641@g.us",
-  "chat_name": "GP da EasyPallet",
-  "sender": "558394442942@s.whatsapp.net",
-  "sender_name": "Rômulo Silva",
+  "chat": "120363123456789012@g.us",
+  "chat_name": "Group Name",
+  "sender": "5511912345678@s.whatsapp.net",
+  "sender_name": "Sender Name",
   "from_me": false,
   "timestamp": 1714000000,
   "type": "text",

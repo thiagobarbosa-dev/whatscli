@@ -8,24 +8,26 @@ export function defaultStoreDir(): string {
 
 /**
  * Normalize a phone number or partial JID to a full WhatsApp JID.
- * Assumes Brazil (+55) country code if no country code is present.
+ * The full international number (with country code) is required.
  * Examples:
- *   "11999999999"           → "5511999999999@s.whatsapp.net"
- *   "5511999999999"         → "5511999999999@s.whatsapp.net"
+ *   "5511999999999"                → "5511999999999@s.whatsapp.net"
  *   "5511999999999@s.whatsapp.net" → unchanged
  *   "1234567890@g.us"              → unchanged (group JID)
  */
 export function normalizeJid(input: string): string {
-  // Already a full JID
+  // Already a full JID — pass through
   if (input.includes('@')) return input
 
-  // Strip any non-digit characters
+  // Strip any non-digit characters (spaces, dashes, parentheses)
   const digits = input.replace(/\D/g, '')
 
-  // If it looks like it already has country code (>= 12 digits), use as-is
-  const jidNumber = digits.length >= 12 ? digits : `55${digits}`
+  if (digits.length < 10) {
+    throw new Error(
+      `Invalid phone number "${input}". Please include the full international number with country code (e.g. 5511999999999).`
+    )
+  }
 
-  return `${jidNumber}@s.whatsapp.net`
+  return `${digits}@s.whatsapp.net`
 }
 
 /** Extract the phone number from a JID */
