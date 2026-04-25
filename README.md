@@ -43,7 +43,7 @@ brew install whatscli
 ### Via NPM (Global)
 
 ```bash
-npm install -g whatscli
+npm install -g @thiagobarbosa-dev/whatscli
 ```
 
 ### From Source
