@@ -1,7 +1,10 @@
 import { Command } from 'commander'
+import path from 'path'
+import os from 'os'
+import { getDb } from '@/store/db'
 import { messageStore } from '@/store/message.store'
 import { outputList, outputRecord, outputError } from '@/output/formatter'
-import { normalizeJid } from '@/utils/jid.utils'
+import { normalizeJid, defaultStoreDir } from '@/utils/jid.utils'
 
 export const messagesCommand = new Command('messages')
   .description('Manage and search synced messages')
@@ -58,7 +61,8 @@ messagesCommand
   .action((id: string, opts: any, cmd: Command) => {
     const globalOpts = cmd.parent?.parent?.opts() ?? {}
     try {
-      const db = require('@/store/db').getDb(globalOpts['store'] ?? process.env.WHATSCLI_STORE_DIR ?? require('path').join(require('os').homedir(), '.whatscli'))
+      const storeDir = globalOpts['store'] ?? defaultStoreDir()
+      const db = getDb(storeDir)
       const msg = db.prepare(`
         SELECT m.*, 
                COALESCE(c.name, '') as chat_name,
@@ -74,8 +78,9 @@ messagesCommand
         process.exit(1)
       }
       
-      msg.from_me = msg.from_me === 1
-      outputRecord(msg as any, globalOpts)
+      const row = msg as any
+      row.from_me = row.from_me === 1
+      outputRecord(row, globalOpts)
     } catch (err) {
       outputError(err instanceof Error ? err.message : 'Unknown error', globalOpts)
       process.exit(1)
@@ -89,7 +94,8 @@ messagesCommand
   .action((id: string, opts: { limit: string }, cmd: Command) => {
     const globalOpts = cmd.parent?.parent?.opts() ?? {}
     try {
-      const db = require('@/store/db').getDb(globalOpts['store'] ?? process.env.WHATSCLI_STORE_DIR ?? require('path').join(require('os').homedir(), '.whatscli'))
+      const storeDir = globalOpts['store'] ?? defaultStoreDir()
+      const db = getDb(storeDir)
       const msg = db.prepare('SELECT chat_jid, timestamp FROM messages WHERE id = ?').get(id)
       
       if (!msg) {
@@ -99,6 +105,7 @@ messagesCommand
 
       const limit = parseInt(opts.limit, 10)
       
+      const msgRow = msg as any
       const rows = db.prepare(`
         SELECT m.*,
                COALESCE(c.name, '') as chat_name,
@@ -109,7 +116,7 @@ messagesCommand
         WHERE m.chat_jid = ?
         AND m.timestamp BETWEEN ? AND ?
         ORDER BY m.timestamp ASC
-      `).all(msg.chat_jid, msg.timestamp - 3600 * 24, msg.timestamp + 3600 * 24) as any[]
+      `).all([msgRow.chat_jid, (msgRow.timestamp as number) - 3600 * 24, (msgRow.timestamp as number) + 3600 * 24]) as any[]
 
       const idx = rows.findIndex((r) => r.id === id)
       const start = Math.max(0, idx - limit)

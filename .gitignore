@@ -9,7 +9,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .pnpm-store/
-package-lock.json
+# package-lock.json must be committed for reproducible installs
 yarn.lock
 pnpm-lock.yaml
 
