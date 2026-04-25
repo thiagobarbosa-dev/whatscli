@@ -1,0 +1,146 @@
+import { Command } from 'commander'
+import { groupService } from '@/services/group.service'
+import { chatStore } from '@/store/chat.store'
+import { normalizeJid, defaultStoreDir } from '@/utils/jid.utils'
+import { ParticipantAction } from '@whiskeysockets/baileys'
+
+export const groupsCommand = new Command('groups')
+  .description('Manage WhatsApp groups')
+
+groupsCommand
+  .command('list')
+  .description('List all groups you are part of')
+  .option('--json', 'Output raw JSON array')
+  .action(async (options, cmd) => {
+    const isJson = options.json || cmd.parent?.opts()?.json
+
+    try {
+      // We can get the groups from the chatStore by filtering is_group = 1
+      const results = chatStore.list({ limit: 1000 }).filter(c => c.is_group === 1)
+
+      if (isJson) {
+        console.log(JSON.stringify(results))
+        return
+      }
+
+      if (results.length === 0) {
+        console.log('No groups found.')
+        return
+      }
+
+      console.log(`\nGroups (${results.length}):\n`)
+      for (const c of results) {
+        const nameDisplay = c.name || c.jid
+        console.log(`- ${nameDisplay} (${c.jid})`)
+      }
+      console.log('')
+    } catch (err) {
+      console.error('Failed to list groups', err)
+      process.exit(1)
+    }
+  })
+
+groupsCommand
+  .command('info')
+  .description('Show detailed metadata and participants for a group')
+  .argument('<jid>', 'Group JID')
+  .option('--json', 'Output raw JSON')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (jidInput, options, cmd) => {
+    const isJson = options.json || cmd.parent?.opts()?.json
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(jidInput)
+
+    if (!jid.endsWith('@g.us')) {
+      console.error('Invalid Group JID. Must end with @g.us')
+      process.exit(1)
+    }
+
+    try {
+      if (!isJson) console.log(`Fetching metadata for ${jid}...`)
+      const metadata = await groupService.getGroupMetadata(storeDir, jid)
+
+      if (isJson) {
+        console.log(JSON.stringify(metadata))
+        return
+      }
+
+      console.log(`\nGroup Info:`)
+      console.log(`  Subject: ${metadata.subject}`)
+      console.log(`  Owner:   ${metadata.owner || 'Unknown'}`)
+      console.log(`  Created: ${new Date(metadata.creation! * 1000).toLocaleString()}`)
+      console.log(`  Desc:    ${metadata.desc || 'No description'}\n`)
+      
+      console.log(`Participants (${metadata.participants.length}):`)
+      for (const p of metadata.participants) {
+        console.log(`  - ${p.id} ${p.admin ? `[${p.admin}]` : ''}`)
+      }
+      console.log('')
+    } catch (err) {
+      console.error('Failed to fetch group info', err)
+      process.exit(1)
+    }
+  })
+
+groupsCommand
+  .command('rename')
+  .description('Change the subject (name) of a group')
+  .argument('<jid>', 'Group JID')
+  .argument('<subject>', 'New group name')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (jidInput, subject, options) => {
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(jidInput)
+
+    try {
+      await groupService.updateSubject(storeDir, jid, subject)
+      console.log('Group renamed successfully.')
+    } catch (err) {
+      console.error('Failed to rename group', err)
+      process.exit(1)
+    }
+  })
+
+groupsCommand
+  .command('leave')
+  .description('Leave a group')
+  .argument('<jid>', 'Group JID')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (jidInput, options) => {
+    const storeDir = options.dir ?? defaultStoreDir()
+    const jid = normalizeJid(jidInput)
+
+    try {
+      await groupService.leaveGroup(storeDir, jid)
+      console.log('Left group successfully.')
+    } catch (err) {
+      console.error('Failed to leave group', err)
+      process.exit(1)
+    }
+  })
+
+groupsCommand
+  .command('participants')
+  .description('Add, remove, promote, or demote participants')
+  .argument('<action>', 'Action: add | remove | promote | demote')
+  .argument('<group_jid>', 'Group JID')
+  .argument('<participants...>', 'List of phone numbers or JIDs to apply the action to')
+  .option('--dir <path>', 'Custom directory for auth state and db')
+  .action(async (actionStr, groupJidInput, participants, options) => {
+    const storeDir = options.dir ?? defaultStoreDir()
+    const groupJid = normalizeJid(groupJidInput)
+    const validActions = ['add', 'remove', 'promote', 'demote']
+
+    if (!validActions.includes(actionStr)) {
+      console.error(`Invalid action. Must be one of: ${validActions.join(', ')}`)
+      process.exit(1)
+    }
+
+    try {
+      await groupService.updateParticipants(storeDir, groupJid, participants, actionStr as ParticipantAction)
+      console.log(`Successfully applied '${actionStr}' for participants.`)
+    } catch (err) {
+      console.error('Failed to update participants', err)
+      process.exit(1)
+    }
+  })

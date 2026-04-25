@@ -36,8 +36,7 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 ### Fixed
 - n/a
 
-<!--
-## [0.3.0] - YYYY-MM-DD
+## [0.3.0] - 2026-04-24
 
 ### Added
 - `whatscli sync` with --once and --follow modes
@@ -47,10 +46,8 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 - `whatscli messages show` and `messages context`
 - NDJSON output formatter for --json flag and non-TTY pipes
 - JID normalization utility (phone number → WhatsApp JID)
--->
 
-<!--
-## [0.4.0] - YYYY-MM-DD
+## [0.4.0] - 2026-04-24
 
 ### Added
 - `whatscli send text` — send plain text messages
@@ -58,19 +55,20 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 - `whatscli send react` — react to a message with an emoji
 - `whatscli media download` — download media from a synced message
 - `whatscli history backfill` — request older message history
-- `whatscli presence typing` and `presence paused`
--->
+- `whatscli presence typing`, `presence recording`, and `presence paused`
 
-<!--
-## [0.5.0] - YYYY-MM-DD
+## [0.5.0] - 2026-04-24
 
 ### Added
-- `whatscli contacts search/show/refresh`
+- `whatscli contacts search/show`
 - `whatscli chats list/show`
 - `whatscli groups list/info/rename/leave`
-- `whatscli groups participants add/remove`
-- Contact aliases and tags support
--->
+- `whatscli groups participants add/remove/promote/demote`
+- SQLite store for contacts and chats
+
+### Fixed
+- "Ghost chat" issue in Brazil (DDD with 9th digit) by adding `sock.onWhatsApp` Smart JID resolution before sending messages
+- CLI 17-second hang and 428 Connection Replaced errors by implementing graceful `socket.end(undefined)` and immediate `process.exit(0)` upon send completion
 
 <!--
 ## [1.0.0] - YYYY-MM-DD

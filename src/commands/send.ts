@@ -50,21 +50,31 @@ sendCommand
     
     try {
       await connectAndExecute(storeDir, async (sock) => {
-        logger.info({ to: jid }, 'Sending text message...')
+        let finalJid = jid
+        if (finalJid.endsWith('@s.whatsapp.net')) {
+          const waResult = await sock.onWhatsApp(finalJid)
+          if (waResult && waResult.length > 0 && waResult[0].exists) {
+            finalJid = waResult[0].jid
+            logger.debug({ original: jid, resolved: finalJid }, 'Resolved JID on WhatsApp')
+          }
+        }
+
+        logger.info({ to: finalJid }, 'Sending text message...')
         
         const content: AnyMessageContent = { text: options.message }
         
         const sendOpts: any = {}
         if (options.quote) {
           sendOpts.quoted = {
-            key: { id: options.quote, remoteJid: jid, fromMe: false },
+            key: { id: options.quote, remoteJid: finalJid, fromMe: false },
             message: { conversation: '' } // Minimum required for Baileys to quote
           }
         }
 
-        const sentMsg = await sock.sendMessage(jid, content, sendOpts)
+        const sentMsg = await sock.sendMessage(finalJid, content, sendOpts)
         logger.info({ id: sentMsg?.key.id }, 'Message sent successfully')
       })
+      process.exit(0)
     } catch (err) {
       logger.error({ err }, 'Failed to send text message')
       process.exit(1)
@@ -85,13 +95,23 @@ sendCommand
     
     try {
       await connectAndExecute(storeDir, async (sock) => {
-        logger.info({ to: jid, file: options.file }, 'Preparing to send file...')
+        let finalJid = jid
+        if (finalJid.endsWith('@s.whatsapp.net')) {
+          const waResult = await sock.onWhatsApp(finalJid)
+          if (waResult && waResult.length > 0 && waResult[0].exists) {
+            finalJid = waResult[0].jid
+            logger.debug({ original: jid, resolved: finalJid }, 'Resolved JID on WhatsApp')
+          }
+        }
+
+        logger.info({ to: finalJid, file: options.file }, 'Preparing to send file...')
         
         const content = await mediaService.prepareMediaContent(options.file, options.caption)
-        const sentMsg = await sock.sendMessage(jid, content)
+        const sentMsg = await sock.sendMessage(finalJid, content)
         
         logger.info({ id: sentMsg?.key.id }, 'File sent successfully')
       })
+      process.exit(0)
     } catch (err) {
       logger.error({ err }, 'Failed to send file')
       process.exit(1)
@@ -124,6 +144,7 @@ sendCommand
         await sock.sendMessage(jid, content)
         logger.info('Reaction sent successfully')
       })
+      process.exit(0)
     } catch (err) {
       logger.error({ err }, 'Failed to send reaction')
       process.exit(1)

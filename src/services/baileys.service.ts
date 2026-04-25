@@ -117,7 +117,7 @@ class BaileysService {
   disconnect(): void {
     this.shouldReconnect = false
     this.socket?.ev.flush()
-    this.socket?.ws.close()
+    this.socket?.end(undefined)
     this.socket = null
   }
 }

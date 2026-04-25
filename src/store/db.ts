@@ -146,4 +146,11 @@ const migrations: Migration[] = [
       );
     `,
   },
+  {
+    version: 4,
+    sql: `
+      -- Phase 4: ensure contacts have pushname
+      ALTER TABLE contacts ADD COLUMN pushname TEXT;
+    `,
+  },
 ]
