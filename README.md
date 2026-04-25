@@ -2,6 +2,7 @@
 
 > WhatsApp Web CLI — a TypeScript alternative to [wacli](https://github.com/steipete/wacli), powered by [Baileys](https://github.com/WhiskeySockets/Baileys).
 
+[![CI](https://github.com/thiagobarbosa-dev/whatscli/actions/workflows/ci.yml/badge.svg)](https://github.com/thiagobarbosa-dev/whatscli/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20.x-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org)
 [![Baileys](https://img.shields.io/badge/Baileys-v7%2B-purple)](https://github.com/WhiskeySockets/Baileys)
