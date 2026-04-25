@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'tsconfig-paths/register';
 
 /**
  * WhatsCLI entrypoint
