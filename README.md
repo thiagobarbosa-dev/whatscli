@@ -18,6 +18,7 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 - 📥 **Offline sync** — message history stored in SQLite with FTS5 search
 - 🔍 **Fast search** — full-text search without internet
 - 📤 **Sending** — text, files, reactions, quoted replies
+- 🚀 **Stealth Bulk Send** — automated safe messaging with random delays, typing simulation, and message rotation (spintax)
 - 👥 **Management** — contacts, chats, groups
 - 🇧🇷 **Smart JID** — automatic phone number resolution (fixes the Brazilian 9th digit ghost-chat issue)
 - 🤖 **OpenClaw-ready** — `--json` output optimized for [OpenClaw](https://openclaw.ai) ingestion
@@ -89,8 +90,24 @@ whatscli messages search "meeting" --json
 # 4. List recent chats
 whatscli chats list
 
-# 5. Send a message
-whatscli send text --to 5511999999999 --message "Hello!"
+### `send text`
+Send a plain text message to a JID or phone number.
+```bash
+whatscli send text "5511999998888" "Hello!"
+```
+
+### `send-bulk`
+Send messages in bulk with mandatory anti-ban stealth measures.
+```bash
+whatscli send-bulk recipients.json --message "Hi {{name}}!" --min-delay 30 --max-delay 90
+```
+- **Arguments**: `<file>` (.json or .csv).
+- **Options**:
+  - `--message <text>`: Template (supports `{a|b}` spintax and `{{var}}` injection).
+  - `--min-delay <sec>`: Min random delay (default: 30).
+  - `--max-delay <sec>`: Max random delay (default: 90).
+  - `--typing-speed <wpm>`: Dynamic typing simulation (default: 40).
+  - `--dry-run`: Simulation mode.
 
 # Diagnostics
 whatscli doctor

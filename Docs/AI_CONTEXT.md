@@ -55,7 +55,9 @@ Stores message history for sync and search.
 
 ### Messaging
 - `send <jid> <message>`: Send a text message.
-- `send-bulk <file> --message "text"`: Send messages in bulk with stealth (delays, typing simulation, spintax).
+- `send-bulk <file> --message "text"`: Send messages in bulk.
+  - Mandatory anti-ban: random delays, typing simulation, content rotation (spintax).
+  - Recipient resolution: auto-resolves phone/JID via `onWhatsApp` before sending.
 - `sync [--once|--follow]`: Synchronize messages and contacts.
 
 ### Groups
