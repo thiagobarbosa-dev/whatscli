@@ -44,7 +44,9 @@ sendCommand
   .requiredOption('--message <text>', 'Text content of the message')
   .option('--quote <msg_id>', 'ID of the message to quote')
   .option('--dir <path>', 'Custom directory for auth state and db')
-  .action(async (options) => {
+  .action(async (options, cmd) => {
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const storeDir = options.dir ?? defaultStoreDir()
     const jid = normalizeJid(options.to)
     
@@ -55,11 +57,10 @@ sendCommand
           const waResult = await sock.onWhatsApp(finalJid)
           if (waResult && waResult.length > 0 && waResult[0].exists) {
             finalJid = waResult[0].jid
-            logger.debug({ original: jid, resolved: finalJid }, 'Resolved JID on WhatsApp')
           }
         }
 
-        logger.info({ to: finalJid }, 'Sending text message...')
+        if (!isJson) logger.info({ to: finalJid }, 'Sending text message...')
         
         const content: AnyMessageContent = { text: options.message }
         
@@ -67,12 +68,17 @@ sendCommand
         if (options.quote) {
           sendOpts.quoted = {
             key: { id: options.quote, remoteJid: finalJid, fromMe: false },
-            message: { conversation: '' } // Minimum required for Baileys to quote
+            message: { conversation: '' } 
           }
         }
 
         const sentMsg = await sock.sendMessage(finalJid, content, sendOpts)
-        logger.info({ id: sentMsg?.key.id }, 'Message sent successfully')
+        
+        if (isJson) {
+          process.stdout.write(JSON.stringify({ success: true, id: sentMsg?.key.id, to: finalJid }) + '\n')
+        } else {
+          logger.info({ id: sentMsg?.key.id }, 'Message sent successfully')
+        }
       })
       process.exit(0)
     } catch (err) {
@@ -89,7 +95,9 @@ sendCommand
   .requiredOption('--file <path>', 'Path to the local file to send')
   .option('--caption <caption>', 'Optional caption for images/videos/documents')
   .option('--dir <path>', 'Custom directory for auth state and db')
-  .action(async (options) => {
+  .action(async (options, cmd) => {
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const storeDir = options.dir ?? defaultStoreDir()
     const jid = normalizeJid(options.to)
     
@@ -100,16 +108,19 @@ sendCommand
           const waResult = await sock.onWhatsApp(finalJid)
           if (waResult && waResult.length > 0 && waResult[0].exists) {
             finalJid = waResult[0].jid
-            logger.debug({ original: jid, resolved: finalJid }, 'Resolved JID on WhatsApp')
           }
         }
 
-        logger.info({ to: finalJid, file: options.file }, 'Preparing to send file...')
+        if (!isJson) logger.info({ to: finalJid, file: options.file }, 'Preparing to send file...')
         
         const content = await mediaService.prepareMediaContent(options.file, options.caption)
         const sentMsg = await sock.sendMessage(finalJid, content)
         
-        logger.info({ id: sentMsg?.key.id }, 'File sent successfully')
+        if (isJson) {
+          process.stdout.write(JSON.stringify({ success: true, id: sentMsg?.key.id, to: finalJid, file: options.file }) + '\n')
+        } else {
+          logger.info({ id: sentMsg?.key.id }, 'File sent successfully')
+        }
       })
       process.exit(0)
     } catch (err) {
@@ -126,13 +137,15 @@ sendCommand
   .requiredOption('--message-id <msg_id>', 'ID of the message to react to')
   .requiredOption('--emoji <emoji>', 'Emoji to use (use empty string to remove reaction)')
   .option('--dir <path>', 'Custom directory for auth state and db')
-  .action(async (options) => {
+  .action(async (options, cmd) => {
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const storeDir = options.dir ?? defaultStoreDir()
     const jid = normalizeJid(options.to)
     
     try {
       await connectAndExecute(storeDir, async (sock) => {
-        logger.info({ to: jid, msgId: options.messageId, emoji: options.emoji }, 'Sending reaction...')
+        if (!isJson) logger.info({ to: jid, msgId: options.messageId, emoji: options.emoji }, 'Sending reaction...')
         
         const content = {
           react: {
@@ -142,7 +155,12 @@ sendCommand
         }
 
         await sock.sendMessage(jid, content)
-        logger.info('Reaction sent successfully')
+        
+        if (isJson) {
+          process.stdout.write(JSON.stringify({ success: true, to: jid, messageId: options.messageId, emoji: options.emoji }) + '\n')
+        } else {
+          logger.info('Reaction sent successfully')
+        }
       })
       process.exit(0)
     } catch (err) {

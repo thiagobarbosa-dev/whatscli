@@ -15,7 +15,7 @@ messagesCommand
   .option('--chat <jid>', 'Filter by chat JID or phone number')
   .option('--limit <n>', 'Number of messages to return', '50')
   .action((opts: { chat?: string; limit: string }, cmd: Command) => {
-    const globalOpts = cmd.parent?.parent?.opts() ?? {}
+    const globalOpts = cmd.optsWithGlobals()
 
     try {
       const limit = parseInt(opts.limit, 10)
@@ -24,6 +24,7 @@ messagesCommand
       const results = messageStore.list({ chat_jid, limit })
       
       outputList(results as any, globalOpts)
+      process.exit(0)
     } catch (err) {
       outputError(err instanceof Error ? err.message : 'Unknown error', globalOpts)
       process.exit(1)
@@ -36,7 +37,7 @@ messagesCommand
   .option('--chat <jid>', 'Filter by chat JID or phone number')
   .option('--limit <n>', 'Number of messages to return', '50')
   .action((query: string, opts: { chat?: string; limit: string }, cmd: Command) => {
-    const globalOpts = cmd.parent?.parent?.opts() ?? {}
+    const globalOpts = cmd.optsWithGlobals()
 
     try {
       const limit = parseInt(opts.limit, 10)
@@ -49,6 +50,7 @@ messagesCommand
       const results = messageStore.search(ftsQuery, { chat_jid, limit })
       
       outputList(results as any, globalOpts)
+      process.exit(0)
     } catch (err) {
       outputError(err instanceof Error ? err.message : 'Unknown error', globalOpts)
       process.exit(1)
@@ -59,9 +61,9 @@ messagesCommand
   .command('show <id>')
   .description('Show a specific message by ID')
   .action((id: string, opts: any, cmd: Command) => {
-    const globalOpts = cmd.parent?.parent?.opts() ?? {}
+    const globalOpts = cmd.optsWithGlobals()
     try {
-      const storeDir = globalOpts['store'] ?? defaultStoreDir()
+      const storeDir = (globalOpts as any).store ?? defaultStoreDir()
       const db = getDb(storeDir)
       const msg = db.prepare(`
         SELECT m.*, 
@@ -81,6 +83,7 @@ messagesCommand
       const row = msg as any
       row.from_me = row.from_me === 1
       outputRecord(row, globalOpts)
+      process.exit(0)
     } catch (err) {
       outputError(err instanceof Error ? err.message : 'Unknown error', globalOpts)
       process.exit(1)
@@ -92,9 +95,9 @@ messagesCommand
   .description('Show context around a message by ID')
   .option('--limit <n>', 'Number of messages before and after', '5')
   .action((id: string, opts: { limit: string }, cmd: Command) => {
-    const globalOpts = cmd.parent?.parent?.opts() ?? {}
+    const globalOpts = cmd.optsWithGlobals()
     try {
-      const storeDir = globalOpts['store'] ?? defaultStoreDir()
+      const storeDir = (globalOpts as any).store ?? defaultStoreDir()
       const db = getDb(storeDir)
       const msg = db.prepare('SELECT chat_jid, timestamp FROM messages WHERE id = ?').get(id)
       
@@ -125,6 +128,7 @@ messagesCommand
       const results = rows.slice(start, end).map(r => ({...r, from_me: r.from_me === 1}))
       
       outputList(results as any, globalOpts)
+      process.exit(0)
     } catch (err) {
       outputError(err instanceof Error ? err.message : 'Unknown error', globalOpts)
       process.exit(1)

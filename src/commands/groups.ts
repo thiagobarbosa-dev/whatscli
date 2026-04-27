@@ -14,7 +14,8 @@ groupsCommand
   .option('--query <text>', 'Filter groups by name or JID')
   .option('--json', 'Output raw JSON array')
   .action(async (options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
 
     try {
       let results: any[]
@@ -25,13 +26,13 @@ groupsCommand
       }
 
       if (isJson) {
-        console.log(JSON.stringify(results))
-        return
+        process.stdout.write(JSON.stringify(results) + '\n')
+        process.exit(0)
       }
 
       if (results.length === 0) {
         console.log(options.query ? `No groups found matching "${options.query}".` : 'No groups found.')
-        return
+        process.exit(0)
       }
 
       console.log(`\nGroups (${results.length}):\n`)
@@ -40,6 +41,7 @@ groupsCommand
         console.log(`- ${nameDisplay} (${c.jid})`)
       }
       console.log('')
+      process.exit(0)
     } catch (err) {
       console.error('Failed to list groups', err)
       process.exit(1)
@@ -52,19 +54,20 @@ groupsCommand
   .argument('<query>', 'Search term')
   .option('--json', 'Output raw JSON array')
   .action(async (query, options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
 
     try {
       const results = chatStore.search(query)
 
       if (isJson) {
-        console.log(JSON.stringify(results))
-        return
+        process.stdout.write(JSON.stringify(results) + '\n')
+        process.exit(0)
       }
 
       if (results.length === 0) {
         console.log(`No groups found matching "${query}".`)
-        return
+        process.exit(0)
       }
 
       console.log(`\nFound ${results.length} groups:\n`)
@@ -73,6 +76,7 @@ groupsCommand
         console.log(`- ${nameDisplay} (${c.jid})`)
       }
       console.log('')
+      process.exit(0)
     } catch (err) {
       console.error('Failed to search groups', err)
       process.exit(1)
@@ -86,7 +90,8 @@ groupsCommand
   .option('--json', 'Output raw JSON')
   .option('--dir <path>', 'Custom directory for auth state and db')
   .action(async (jidInput, options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const storeDir = options.dir ?? defaultStoreDir()
     const jid = normalizeJid(jidInput)
 
@@ -100,8 +105,8 @@ groupsCommand
       const metadata = await groupService.getGroupMetadata(storeDir, jid)
 
       if (isJson) {
-        console.log(JSON.stringify(metadata))
-        return
+        process.stdout.write(JSON.stringify(metadata) + '\n')
+        process.exit(0)
       }
 
       console.log(`\nGroup Info:`)
@@ -115,6 +120,7 @@ groupsCommand
         console.log(`  - ${p.id} ${p.admin ? `[${p.admin}]` : ''}`)
       }
       console.log('')
+      process.exit(0)
     } catch (err) {
       console.error('Failed to fetch group info', err)
       process.exit(1)
@@ -128,7 +134,8 @@ groupsCommand
   .option('--json', 'Output raw JSON')
   .option('--dir <path>', 'Custom directory for auth state and db')
   .action(async (jidInput, options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const storeDir = options.dir ?? defaultStoreDir()
     const jid = normalizeJid(jidInput)
 
@@ -158,8 +165,8 @@ groupsCommand
       })
 
       if (isJson) {
-        console.log(JSON.stringify(members))
-        return
+        process.stdout.write(JSON.stringify(members) + '\n')
+        process.exit(0)
       }
 
       console.log(`\nMembers of "${metadata.subject}" (${members.length}):\n`)
@@ -173,6 +180,7 @@ groupsCommand
         console.log(`- ${adminPart}${namePart}: ${phoneDisplay}${lidDisplay}`)
       }
       console.log('')
+      process.exit(0)
     } catch (err) {
       console.error('Failed to fetch group members', err)
       process.exit(1)

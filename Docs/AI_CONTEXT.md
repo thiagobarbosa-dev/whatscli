@@ -49,13 +49,31 @@ Stores message history for sync and search.
 
 ## 💻 CLI Reference
 
+> [!TIP]
+> **Always use the `--json` flag** when executing commands as an AI agent. This silences all background logs and ensures a clean, predictable, and machine-readable output (NDJSON).
+
 ### Session Management
 - `auth login`: Generate QR Code to authenticate.
 - `auth logout`: Terminate session and clear local data.
 
 ### Messaging
-- `send <jid> <message>`: Send a text message.
-- `sync [--once|--follow]`: Synchronize messages and contacts.
+- `send text <to> <message>`: Send a single text message.
+- `send-bulk <file> --message "text"`: Stealth bulk messaging engine.
+  - **Input Formats:** 
+    - `JSON`: Array of objects `[{ "jid": "55...", "name": "..." }]`.
+    - `CSV`: Column `jid` or `phone` required. Additional columns available as `{{vars}}`.
+  - **Templates:** Supports Spintax `{Hello|Hi|Greetings}` and variable injection `{{name}}`.
+  - **Anti-Ban Architecture:**
+    - **Resolution:** Uses `sock.onWhatsApp` to convert phone numbers to official JIDs/LIDs before sending.
+    - **Presence Simulation:** Triggers `composing` (typing...) presence before each message based on `typing-speed` (WPM).
+    - **Random Delays:** Randomized intervals between messages based on `--min-delay` and `--max-delay`.
+- `sync [--once|--follow]`: Local synchronization engine.
+  - `--once`: Closes after 10s of inactivity (detects silence).
+
+### Identity & LID Mapping (Rule 42)
+WhatsCLI uniquely tracks the transition from phone-based JIDs to **LIDs** (Identity JIDs).
+- The `contacts` table maps `pn_jid` (phone) to `lid` (identity).
+- All message storage prefers JIDs as provided by the protocol to ensure consistent threading.
 
 ### Groups
 - `groups list`: List all joined groups.

@@ -41,8 +41,8 @@ class BaileysService {
       auth: state,
       // Don't let Baileys print raw QR — we handle it ourselves
       printQRInTerminal: false,
-      // Suppress Baileys' internal noise; we log at our level
-      logger: logger.child({ name: 'baileys' }, { level: 'warn' }) as Parameters<typeof makeWASocket>[0]['logger'],
+      // Suppress Baileys' internal noise; inherit global level (Rule 39)
+      logger: logger.child({ name: 'baileys' }, { level: logger.level }) as Parameters<typeof makeWASocket>[0]['logger'],
       browser: Browsers.ubuntu('Desktop'),
     })
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// Fix EPIPE errors (Broken Pipe) when piping output (e.g., to 'head')
 process.stdout.on('error', (err: any) => {
   if (err.code === 'EPIPE') process.exit(0)
 })
@@ -26,6 +25,7 @@ import { doctorCommand } from './commands/doctor.js'
 import { syncCommand } from './commands/sync.js'
 import { messagesCommand } from './commands/messages.js'
 import { sendCommand } from './commands/send.js'
+import { sendBulkCommand } from './commands/send-bulk.js'
 import { mediaCommand } from './commands/media.js'
 import { historyCommand } from './commands/history.js'
 import { presenceCommand } from './commands/presence.js'
@@ -57,12 +57,13 @@ const program = new Command()
 // ── Read-Only Enforcement ─────────────────────────────────────────────────────
 program.hook('preAction', (thisCommand, actionCommand) => {
   const opts = thisCommand.opts()
+  
   if (opts.readOnly) {
     const cmdName = actionCommand.name()
     const parentName = actionCommand.parent?.name()
     
     // Commands that mutate WhatsApp state
-    const blockedParents = ['send', 'presence']
+    const blockedParents = ['send', 'send-bulk', 'presence']
     const blockedCommands = ['rename', 'leave', 'participants', 'backfill']
     
     if (blockedParents.includes(parentName || '') || blockedCommands.includes(cmdName)) {
@@ -78,6 +79,7 @@ program.addCommand(doctorCommand)
 program.addCommand(syncCommand)
 program.addCommand(messagesCommand)
 program.addCommand(sendCommand)
+program.addCommand(sendBulkCommand)
 program.addCommand(mediaCommand)
 program.addCommand(historyCommand)
 program.addCommand(presenceCommand)

@@ -9,6 +9,26 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [1.2.0] - 2026-04-27
+
+### Added
+- **Stealth Bulk Send**: New `whatscli send-bulk <file>` command for safe messaging.
+- **Human-like Behavior**: Mandatory anti-ban measures including random delays and dynamic typing simulation.
+- **Typing Simulation**: Auto-calculates typing duration based on message length (40 words per minute average).
+- **Message Spintax**: Support for content rotation using `{Olá|Oi|Hey}` syntax to avoid fingerprinting.
+- **Variable Injection**: Dynamic placeholder replacement (e.g., `{{name}}`) from JSON/CSV data.
+- **Format Support**: Import recipients from `.json` or `.csv` files (supports JIDs, LIDs, and raw Phone Numbers).
+- **Dry Run Mode**: `--dry-run` flag to simulate batches and verify logic without sending actual messages.
+- **AI Project Context**: New `Docs/AI_CONTEXT.md` providing technical guidance for AI agents and automation developers.
+- **Structured Feedback**: Success reporting in JSON for `send` and `send-bulk` when `--json` flag is active.
+
+### Changed
+- **Zero-Pollution JSON**: Standardized clean output across all data commands (groups, contacts, chats, messages) by silencing initialization logs and Baileys background noise.
+- **Fast-Exit Engine**: Enforced immediate process termination (`process.exit(0)`) after command completion to bypass Baileys' long connection teardown timeouts.
+- **Unified Flag Detection**: Migrated all commands to `optsWithGlobals()` for robust inherited flag detection.
+- **Identity Awareness**: Improved LID mapping in bulk flows to ensure messages are routed to the correct identity JID.
+- Updated project safety rules in `RULES.md` to accommodate responsible bulk sending.
+
 ## [1.1.2] - 2026-04-27
 
 ### Added
