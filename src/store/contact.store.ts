@@ -6,6 +6,8 @@ export interface ContactRecord {
   name: string | null
   short_name: string | null
   pushname: string | null
+  lid: string | null
+  pn_jid: string | null
   updated_at: number
 }
 
@@ -16,15 +18,17 @@ export class ContactStore {
     // SQLite upsert
     db.run(
       `
-      INSERT INTO contacts (jid, name, short_name, pushname)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO contacts (jid, name, short_name, pushname, lid, pn_jid)
+      VALUES (?, ?, ?, ?, ?, ?)
       ON CONFLICT(jid) DO UPDATE SET
-        name = excluded.name,
-        short_name = excluded.short_name,
-        pushname = excluded.pushname,
+        name = COALESCE(excluded.name, name),
+        short_name = COALESCE(excluded.short_name, short_name),
+        pushname = COALESCE(excluded.pushname, pushname),
+        lid = COALESCE(excluded.lid, lid),
+        pn_jid = COALESCE(excluded.pn_jid, pn_jid),
         updated_at = unixepoch()
       `,
-      [record.jid, record.name, record.short_name, record.pushname]
+      [record.jid, record.name, record.short_name, record.pushname, record.lid || null, record.pn_jid || null]
     )
   }
 
@@ -37,9 +41,9 @@ export class ContactStore {
     const db = getDb(defaultStoreDir())
     return db.all(
       `SELECT * FROM contacts 
-       WHERE name LIKE ? OR short_name LIKE ? OR pushname LIKE ? OR jid LIKE ?
+       WHERE name LIKE ? OR short_name LIKE ? OR pushname LIKE ? OR jid LIKE ? OR lid LIKE ? OR pn_jid LIKE ?
        ORDER BY updated_at DESC`,
-      [`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]
+      [`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`]
     ) as unknown as ContactRecord[]
   }
 }

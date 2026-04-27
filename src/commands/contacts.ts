@@ -65,6 +65,12 @@ contactsCommand
 
       console.log(`\nContact Details:`)
       console.log(`  JID:        ${contact.jid}`)
+      if (contact.lid && contact.lid !== contact.jid) {
+        console.log(`  LID:        ${contact.lid}`)
+      }
+      if (contact.pn_jid && contact.pn_jid !== contact.jid) {
+        console.log(`  Phone JID:  ${contact.pn_jid}`)
+      }
       console.log(`  Name:       ${contact.name || 'N/A'}`)
       console.log(`  Short Name: ${contact.short_name || 'N/A'}`)
       console.log(`  Pushname:   ${contact.pushname || 'N/A'}`)

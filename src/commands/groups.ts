@@ -143,10 +143,17 @@ groupsCommand
       
       const members = metadata.participants.map(p => {
         const contact = contactStore.get(p.id)
+        // If the ID is a LID, check if we have a linked phone JID
+        // If the ID is a Phone JID, check if we have a linked LID
+        const linkedPhone = contact?.pn_jid || (p.id.endsWith('@s.whatsapp.net') ? p.id : null)
+        const linkedLid = contact?.lid || (p.id.endsWith('@lid') ? p.id : null)
+
         return {
           jid: p.id,
           name: contact?.name || contact?.pushname || null,
-          admin: p.admin || null
+          admin: p.admin || null,
+          phone: linkedPhone,
+          lid: linkedLid
         }
       })
 
@@ -157,10 +164,13 @@ groupsCommand
 
       console.log(`\nMembers of "${metadata.subject}" (${members.length}):\n`)
       for (const m of members) {
-        const phone = m.jid.split('@')[0]
         const namePart = m.name ? `${m.name}` : 'Unknown'
         const adminPart = m.admin ? `[${m.admin}] ` : ''
-        console.log(`- ${adminPart}${namePart}: ${phone} (${m.jid})`)
+        
+        const phoneDisplay = m.phone ? m.phone.split('@')[0] : 'No Phone'
+        const lidDisplay = m.lid ? ` (${m.lid})` : ''
+        
+        console.log(`- ${adminPart}${namePart}: ${phoneDisplay}${lidDisplay}`)
       }
       console.log('')
     } catch (err) {

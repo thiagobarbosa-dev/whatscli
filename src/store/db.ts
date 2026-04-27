@@ -154,4 +154,11 @@ const migrations: Migration[] = [
       ALTER TABLE contacts ADD COLUMN pushname TEXT;
     `,
   },
+  {
+    version: 5,
+    sql: `
+      ALTER TABLE contacts ADD COLUMN lid TEXT;
+      ALTER TABLE contacts ADD COLUMN pn_jid TEXT;
+    `,
+  },
 ]

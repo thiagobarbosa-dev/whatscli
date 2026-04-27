@@ -9,6 +9,17 @@ Commit types follow [Conventional Commits](https://www.conventionalcommits.org/e
 
 ---
 
+## [1.1.2] - 2026-04-27
+
+### Added
+- **LID/JID Mapping**: Support for mapping WhatsApp's new LID (Identity-based) identifiers to traditional JIDs (Phone-based).
+- Added `lid` and `pn_jid` columns to local contacts database to preserve relationship between identities and phone numbers.
+- `whatscli groups members <jid>` now displays the phone number even for participants identified by LID (if the mapping exists in local DB).
+- `whatscli contacts show <jid>` now explicitly shows linked LID or Phone JID.
+
+### Fixed
+- Improved member visibility in groups where WhatsApp has transitioned participants to LID mode.
+
 ## [1.1.1] - 2026-04-25
 
 ### Fixed

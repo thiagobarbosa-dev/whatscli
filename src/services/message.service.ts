@@ -23,13 +23,24 @@ export class MessageService {
     // If it's a DM: the actual sender is the remoteJid
     let senderJid = chatJid
     if (fromMe) {
-      // In fromMe messages, Baileys does not populate participant reliably depending on context
-      // Actually, typically fromMe means WE sent it. However, OpenClaw expects the sender JID.
-      // We will normalize finding our own JID later if necessary, but for now we tag as 'ME' or generic
-      senderJid = 'ME' // Placeholder or actual JID if we fetch from state
+      senderJid = 'ME'
     } else if (isJidGroup(chatJid)) {
       if (msg.key.participant) {
         senderJid = normalizeJid(msg.key.participant)
+        
+        // Capture mapping if participantAlt is present
+        const participantAlt = (msg.key as any).participantAlt
+        if (participantAlt) {
+          const { contactStore } = await import('../store/contact.store.js')
+          contactStore.upsert({
+            jid: senderJid,
+            name: null,
+            short_name: null,
+            pushname: null,
+            lid: senderJid.endsWith('@lid') ? senderJid : normalizeJid(participantAlt),
+            pn_jid: senderJid.endsWith('@s.whatsapp.net') ? senderJid : normalizeJid(participantAlt)
+          })
+        }
       } else {
         logger.warn({ id, chatJid }, 'Message from group misses participant JID')
       }
