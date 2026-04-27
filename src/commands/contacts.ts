@@ -13,20 +13,20 @@ contactsCommand
   .option('--json', 'Output raw JSON array')
   .option('--dir <path>', 'Custom directory for auth state and db')
   .action(async (query, options, cmd) => {
-    // The --json flag might be global, check parent
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
 
     try {
       const results = contactStore.search(query)
 
       if (isJson) {
-        console.log(JSON.stringify(results))
-        return
+        process.stdout.write(JSON.stringify(results) + '\n')
+        process.exit(0)
       }
 
       if (results.length === 0) {
         console.log('No contacts found matching the query.')
-        return
+        process.exit(0)
       }
 
       console.log(`\nFound ${results.length} contacts:\n`)
@@ -35,6 +35,7 @@ contactsCommand
         console.log(`- ${nameDisplay} (${c.jid})`)
       }
       console.log('')
+      process.exit(0)
     } catch (err) {
       console.error('Failed to search contacts', err)
       process.exit(1)
@@ -47,20 +48,21 @@ contactsCommand
   .argument('<jid>', 'Contact JID or Phone Number')
   .option('--json', 'Output raw JSON')
   .action(async (jidInput, options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const jid = normalizeJid(jidInput)
 
     try {
       const contact = contactStore.get(jid)
 
       if (!contact) {
-        console.error('Contact not found in local database.')
+        process.stderr.write('Error: Contact not found in local database.\n')
         process.exit(1)
       }
 
       if (isJson) {
-        console.log(JSON.stringify(contact))
-        return
+        process.stdout.write(JSON.stringify(contact) + '\n')
+        process.exit(0)
       }
 
       console.log(`\nContact Details:`)
@@ -75,6 +77,7 @@ contactsCommand
       console.log(`  Short Name: ${contact.short_name || 'N/A'}`)
       console.log(`  Pushname:   ${contact.pushname || 'N/A'}`)
       console.log(`  Updated:    ${new Date(contact.updated_at * 1000).toLocaleString()}\n`)
+      process.exit(0)
     } catch (err) {
       console.error('Failed to get contact details', err)
       process.exit(1)

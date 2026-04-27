@@ -14,9 +14,10 @@ export const sendBulkCommand = new Command('send-bulk')
   .option('--max-delay <seconds>', 'Maximum delay between messages', '90')
   .option('--typing-speed <wpm>', 'Words per minute for typing simulation', '40')
   .option('--dry-run', 'Simulation mode (no messages actually sent)', false)
-  .action(async (fileArg: string, opts) => {
-    const globalOpts = sendBulkCommand.parent?.opts() ?? {}
-    const storeDir: string = globalOpts['store'] ?? defaultStoreDir()
+  .action(async (fileArg: string, opts, cmd) => {
+    const globalOpts = cmd.optsWithGlobals()
+    const isJson = globalOpts.json
+    const storeDir: string = (globalOpts as any).store ?? defaultStoreDir()
     
     try {
       const filePath = path.resolve(fileArg)
@@ -59,7 +60,7 @@ export const sendBulkCommand = new Command('send-bulk')
         throw new Error('Please provide at least one message template using --message')
       }
 
-      logger.info({ count: items.length }, 'Starting bulk send process...')
+      if (!isJson) logger.info({ count: items.length }, 'Starting bulk send process...')
 
       await batchService.sendBulk(storeDir, items, templates, {
         minDelay: parseInt(opts.minDelay),
@@ -68,7 +69,12 @@ export const sendBulkCommand = new Command('send-bulk')
         dryRun: opts.dryRun
       })
 
-      outputSuccess(`Bulk send process completed for ${items.length} recipients.`, globalOpts)
+      if (isJson) {
+        process.stdout.write(JSON.stringify({ success: true, count: items.length, message: 'Bulk send process completed' }) + '\n')
+      } else {
+        outputSuccess(`Bulk send process completed for ${items.length} recipients.`, globalOpts)
+      }
+      process.exit(0)
     } catch (err: any) {
       logger.error(err, 'Bulk send failed')
       outputError(err.message, globalOpts)

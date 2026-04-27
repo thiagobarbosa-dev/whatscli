@@ -25,6 +25,11 @@ WhatsCLI is a command-line tool to automate WhatsApp Web. Focused on:
 
 ---
 
+> [!NOTE]
+> **For AI Agents:** Detailed technical context, schema, and CLI guidelines for AI interactions are available in [Docs/AI_CONTEXT.md](./Docs/AI_CONTEXT.md).
+
+---
+
 ## Prerequisites
 
 - Node.js >= 20.x
@@ -97,17 +102,34 @@ whatscli send text "5511999998888" "Hello!"
 ```
 
 ### `send-bulk`
-Send messages in bulk with mandatory anti-ban stealth measures.
+Send messages in bulk with mandatory anti-ban stealth measures. Supports `.json` and `.csv`.
+
 ```bash
 whatscli send-bulk recipients.json --message "Hi {{name}}!" --min-delay 30 --max-delay 90
 ```
-- **Arguments**: `<file>` (.json or .csv).
-- **Options**:
-  - `--message <text>`: Template (supports `{a|b}` spintax and `{{var}}` injection).
-  - `--min-delay <sec>`: Min random delay (default: 30).
-  - `--max-delay <sec>`: Max random delay (default: 90).
-  - `--typing-speed <wpm>`: Dynamic typing simulation (default: 40).
-  - `--dry-run`: Simulation mode.
+
+#### Recipient Formats
+
+**JSON (`recipients.json`):**
+```json
+[
+  { "jid": "5511999998888", "name": "Name" },
+  { "jid": "5511977776666", "name": "Name" }
+]
+```
+
+**CSV (`recipients.csv`):**
+```csv
+jid,name,city
+5511999998888,Name,City Name
+5511977776666,Name,City Name
+```
+
+- **Features**:
+  - 🔄 **Spintax**: `{Hello|Hi|Hey} {{name}}!` will rotate greetings.
+  - 🧪 **Variables**: Any key in JSON or column in CSV can be used as `{{key}}`.
+  - 🕒 **Human-like**: Simulates "typing..." presence based on message length and WPM.
+  - 🛡️ **Anti-Ban**: Mandatory randomized delays and server-side JID resolution.
 
 # Diagnostics
 whatscli doctor

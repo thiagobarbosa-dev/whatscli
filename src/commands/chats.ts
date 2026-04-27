@@ -13,7 +13,8 @@ chatsCommand
   .option('--offset <number>', 'Pagination offset', '0')
   .option('--json', 'Output raw JSON array')
   .action(async (options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const limit = parseInt(options.limit, 10)
     const offset = parseInt(options.offset, 10)
 
@@ -21,13 +22,13 @@ chatsCommand
       const results = chatStore.list({ limit, offset })
 
       if (isJson) {
-        console.log(JSON.stringify(results))
-        return
+        process.stdout.write(JSON.stringify(results) + '\n')
+        process.exit(0)
       }
 
       if (results.length === 0) {
         console.log('No recent chats found.')
-        return
+        process.exit(0)
       }
 
       console.log(`\nRecent Chats:\n`)
@@ -40,6 +41,7 @@ chatsCommand
         console.log(`${typeBadge} ${nameDisplay} ${unread} - Last active: ${time}`)
         console.log(`   JID: ${c.jid}\n`)
       }
+      process.exit(0)
     } catch (err) {
       console.error('Failed to list chats', err)
       process.exit(1)
@@ -52,20 +54,21 @@ chatsCommand
   .argument('<jid>', 'Chat JID or Phone Number')
   .option('--json', 'Output raw JSON')
   .action(async (jidInput, options, cmd) => {
-    const isJson = options.json || cmd.parent?.opts()?.json
+    const opts = cmd.optsWithGlobals()
+    const isJson = opts.json
     const jid = normalizeJid(jidInput)
 
     try {
       const chat = chatStore.get(jid)
 
       if (!chat) {
-        console.error('Chat not found in local database.')
+        process.stderr.write('Error: Chat not found in local database.\n')
         process.exit(1)
       }
 
       if (isJson) {
-        console.log(JSON.stringify(chat))
-        return
+        process.stdout.write(JSON.stringify(chat) + '\n')
+        process.exit(0)
       }
 
       console.log(`\nChat Details:`)
@@ -74,6 +77,7 @@ chatsCommand
       console.log(`  Is Group:     ${chat.is_group ? 'Yes' : 'No'}`)
       console.log(`  Unread Count: ${chat.unread_count}`)
       console.log(`  Last Active:  ${chat.last_message_at ? new Date(chat.last_message_at * 1000).toLocaleString() : 'N/A'}\n`)
+      process.exit(0)
     } catch (err) {
       console.error('Failed to get chat details', err)
       process.exit(1)
