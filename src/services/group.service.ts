@@ -17,6 +17,22 @@ export class GroupService {
         last_message_at: metadata.creation || null,
         is_group: 1
       })
+
+      // Proactively update contact store with participant info (LID/JID mapping)
+      if (metadata.participants) {
+        const { contactStore } = await import('../store/contact.store.js')
+        for (const p of metadata.participants) {
+          contactStore.upsert({
+            jid: p.id,
+            name: null,
+            short_name: null,
+            pushname: null,
+            lid: (p as any).lid || (p.id.endsWith('@lid') ? p.id : null),
+            pn_jid: (p as any).pnJid || (p.id.endsWith('@s.whatsapp.net') ? p.id : null)
+          })
+        }
+      }
+
       return metadata
     } catch (err) {
       // No active socket or error fetching, proceed with standalone connection
@@ -33,7 +49,7 @@ export class GroupService {
               const sock = baileysService.getSocket()
               const metadata = await sock.groupMetadata(groupJid)
               
-              // Persist to store so search works
+              // Persist group to store
               chatStore.upsert({
                 jid: groupJid,
                 name: metadata.subject,
@@ -41,6 +57,21 @@ export class GroupService {
                 last_message_at: metadata.creation || null,
                 is_group: 1
               })
+
+              // Proactively update contact store with participant info (LID/JID mapping)
+              if (metadata.participants) {
+                const { contactStore } = await import('../store/contact.store.js')
+                for (const p of metadata.participants) {
+                  contactStore.upsert({
+                    jid: p.id,
+                    name: null, // We might not have the name here
+                    short_name: null,
+                    pushname: null,
+                    lid: (p as any).lid || (p.id.endsWith('@lid') ? p.id : null),
+                    pn_jid: (p as any).pnJid || (p.id.endsWith('@s.whatsapp.net') ? p.id : null)
+                  })
+                }
+              }
 
               setTimeout(() => baileysService.disconnect(), 1000)
               resolve(metadata)

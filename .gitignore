@@ -77,8 +77,8 @@ coverage/
 # ── Temporary files ───────────────────────────
 tmp/
 temp/
+scripts/
 *.tmp
 
 # ── Agent ───────────────────────────────────
-Docs/
 .agent/

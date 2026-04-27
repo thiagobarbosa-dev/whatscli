@@ -10,11 +10,15 @@ export class ContactService {
       if (!c.id) continue
       const jid = normalizeJid(c.id)
       
+      logger.debug({ id: c.id, keys: Object.keys(c) }, 'Handling contact upsert')
+      
       contactStore.upsert({
         jid,
         name: c.name || null,
-        short_name: c.notify || null, // notify is typically the pushname, but Baileys maps it loosely
-        pushname: c.notify || null
+        short_name: c.notify || null,
+        pushname: c.notify || null,
+        lid: (c as any).lid || null,
+        pn_jid: (c as any).pnJid || null
       })
     }
   }
@@ -31,7 +35,9 @@ export class ContactService {
         jid,
         name: c.name !== undefined ? c.name : (existing?.name || null),
         short_name: c.notify !== undefined ? c.notify : (existing?.short_name || null),
-        pushname: c.notify !== undefined ? c.notify : (existing?.pushname || null)
+        pushname: c.notify !== undefined ? c.notify : (existing?.pushname || null),
+        lid: (c as any).lid || (jid.endsWith('@lid') ? jid : (existing?.lid || null)),
+        pn_jid: (c as any).pnJid || (jid.endsWith('@s.whatsapp.net') ? jid : (existing?.pn_jid || null))
       })
     }
   }
